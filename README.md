@@ -113,12 +113,19 @@ The notes below are practical limits. They are not a certification. The test rec
 - This exact public APK has not been installed on a physical phone in the recorded checks. An earlier private build was reported to work on a phone. That report describes a different file.
 - Recorded browser checks for this build: app-page checks 26 of 26, import-escaping and print security checks 40 of 40, and T-Card checks 70 of 70. One T-Card print comparison failed on a first run and passed on the rerun. The separate ICS 214 and ICS 309 browser suites were not run on this build.
 
-## License
+## Source and license
 
-Copyright 2026 lambdadriver. Download and use of the apps is permitted. Modification and redistribution stay with the copyright holder unless they are granted separately. The full terms are in [LICENSE](LICENSE). Those terms are not an open-source license.
+Copyright 2026 lambdadriver. The work in this repository is licensed under the GNU General Public License, version 3, published by the Free Software Foundation. The license text is [LICENSE](LICENSE). It is the canonical GPL-3.0 text and matches the file already on `main`.
+
+The HTML files in `apps/` are the source for the three browser tools. The same bytes are in `web/assets-www/`. The Android launcher page is `web/assets-www/index.html`.
+
+The Android package in `downloads/` is the binary. Its corresponding source is the Java in `android/java/`, `android/AndroidManifest.xml`, `android/res/`, the HTML under `web/assets-www/`, and `scripts/build_apk.py`. A local unsigned build of that source matched the published APK’s `classes.dex`, compiled manifest, `resources.arsc`, `res/` files, and `assets/www/` files. It does not reproduce the signature. Details are in [docs/SOURCE.md](docs/SOURCE.md).
+
+The HTML files and the APK in this branch are the original release bytes. They do not contain a GPL notice in the About screens. GPL-3.0 section 5(d) does not require adding one, because those screens do not already display Appropriate Legal Notices. A notice can be added later with a new build. That would change the file hashes. This branch does not do that.
 
 ## Repository layout
 
 - `apps/` holds the three browser tools.
 - `downloads/` holds the Android APK and [downloads/SHA256SUMS.txt](downloads/SHA256SUMS.txt).
-- `docs/` holds the changelog, the validation record, a maintainer draft for a future GitHub Release, and `docs/profile-setup.md`. That profile file is text the account owner can paste later. It has not been applied to the GitHub profile.
+- `docs/SOURCE.md` says which Android source is still missing and how a later from-source build is signed.
+- `docs/` also holds the changelog, the validation record, a maintainer draft for a future GitHub Release, and `docs/profile-setup.md`. The profile file has not been applied to the GitHub profile.

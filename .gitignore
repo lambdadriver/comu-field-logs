@@ -28,8 +28,16 @@ saved-logs/
 exports/
 backups/
 *.json
+!tests/fixtures/tcard-sample.json
 *.csv
 *.log
+
+# Build output. The published APK in downloads/ is the only APK that belongs in git.
+/build/
+/dist/
+*.apk
+!downloads/COMU_Field_Logs_v1.1-public.apk
+tests/out/
 
 # OS and editor junk.
 .DS_Store

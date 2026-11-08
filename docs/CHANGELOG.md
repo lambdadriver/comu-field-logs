@@ -25,4 +25,6 @@ First Android app. It bundles ICS 214 v4.17, ICS 309 v1.4, and T-Card v1.1, with
 
 ## Repository
 
-November 8, 2026: the empty repository had been created with the GNU GPL v3.0 license text. No application files were in that commit. That license file is replaced by the copyright and use terms in `LICENSE` before the applications are added. The applications are offered under those terms only.
+November 8, 2026: the project is under the GNU General Public License, version 3. `LICENSE` is the canonical GPL-3.0 text. An intermediate draft of this repository used narrower download-and-use terms. Those terms are withdrawn.
+
+The HTML tools in `apps/` are source. The Android wrapper source is in `android/`, `web/assets-www/`, and `scripts/build_apk.py`. See `docs/SOURCE.md`. The APK and HTML bytes were not changed when the license file was restored or when the Java comment was edited.

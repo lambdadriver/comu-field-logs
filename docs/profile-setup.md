@@ -33,9 +33,9 @@ I publish COMU Field Logs, a set of offline tools for an ICS 214 activity log, a
 
 The project is independent. It is not an agency product, and it is not a certification.
 
-Current files and copyright terms: [comu-field-logs](https://github.com/lambdadriver/comu-field-logs).
+Current files: [comu-field-logs](https://github.com/lambdadriver/comu-field-logs).
 
-Download and use of those apps is permitted. Modification and redistribution are reserved unless granted separately.
+Copyright 2026 lambdadriver. The project is licensed under the GNU GPL version 3.
 ```
 
 Leave the link out if `comu-field-logs` is still private. A public profile page would otherwise point at a repository other people cannot open.

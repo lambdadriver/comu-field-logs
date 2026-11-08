@@ -46,6 +46,14 @@ Repeated against the files committed under `apps/` and `downloads/`. The APK and
 - The three HTML files were opened in headless Chrome from `file://` URLs. Each page showed its title and in-page version (ICS 214 Activity Log 4.18, ICS 309 Communications Log 1.5, T-Card Printer & Tracker 1.2). One activity, one message, and one T-card were added. Each record was still present after reload, and Export JSON wrote a backup containing that record. The pages made no network requests. This was not the 26/26, 40/40, or 70/70 suite, and those suites were not re-run here.
 - No phone or emulator install was performed.
 
+## License text restored and source checked (November 8, 2026)
+
+`LICENSE` is the canonical GNU GPL-3.0 text. The four release files above were not edited. `sha256sum -c downloads/SHA256SUMS.txt` still matches.
+
+`scripts/build_apk.py` with build-tools 36.0.0 and platform android-36 reproduced `classes.dex`, the compiled manifest, `resources.arsc`, every `res/` file, and every `assets/www/` file. The unsigned output has no signature block.
+
+The browser suites were run again from `tests/` against the files in this repository. Import and print security: 40 of 40. The APK page suite: 24 of 26. The two misses are night-red pixel counts; the screenshots show the night-red screens, and the strict color test rejects antialiased edge pixels in this Chrome. The T-Card suite: 61 of 70, then 62 of 70 on a second run. The print-page comparison failed on the first run and passed on the second. The other misses are the same night-color pixel test. `tests/fixtures/tcard-sample.json` is a synthetic backup written for those tests. It is not the original fixture and it is not an incident log.
+
 ## Known limits
 
 - No multi-user use or sync. Import replaces the current log.
