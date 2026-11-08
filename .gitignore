@@ -29,6 +29,8 @@ exports/
 backups/
 *.json
 !tests/fixtures/tcard-sample.json
+!experimental/tcard/tests/sample.json
+experimental/tcard/tests/out/
 *.csv
 *.log
 
