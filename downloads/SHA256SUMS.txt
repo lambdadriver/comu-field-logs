@@ -1,0 +1,6 @@
+# COMU Field Logs release files. From the repository root:
+#   sha256sum -c downloads/SHA256SUMS.txt
+c5f9e88c5f68d9ac250aa2ac23968184ccf5420de1dd5006ede4920a85278234  downloads/COMU_Field_Logs_v1.1-public.apk
+6135fcc8351732486599d765074abd322721978f731f8a75cdef4a9020e3f13d  apps/ICS_214_Activity_Log_v4.18.html
+220671f1595ebe674c33d5084468549b4974c19549fb3c796eb6a855554d5ff1  apps/ICS_309_Communications_Log_v1.5.html
+24c7b4c9980bfc4acdb2daee40b54949b0324b9fd25f8253e358215178b9dcac  apps/TCard_Printer_Tracker_v1.2.html

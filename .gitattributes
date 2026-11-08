@@ -1,0 +1,4 @@
+# Keep release bytes identical. Do not rewrite line endings.
+*.apk binary
+*.html binary
+*.png binary

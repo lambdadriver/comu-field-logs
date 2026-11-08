@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<!-- ICS 309 Communications Log by lambdadriver, v1.5. Offline single-file tool; data stays on this device. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="author" content="lambdadriver">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" id="metaTheme" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ICS 309">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data: blob:; connect-src 'none'; media-src 'none'; form-action 'none'; base-uri 'none'">
+<title>ICS 309 Communications Log</title>
+<style>
+:root{
+  --bg:#f4f5f7;--panel:#fff;--text:#111;--muted:#5b6170;--line:#d4d7de;--accent:#0b5cad;--accent-text:#fff;
+  --danger:#b3261e;--ok:#1d7a3a;--input:#fff;--chip:#e8eef7;--focus:#ffb300;
+  --tap:48px;
+}
+html[data-theme="dark"]{
+  --bg:#0d0f12;--panel:#171a1f;--text:#e9e6df;--muted:#9aa0aa;--line:#2c313a;--accent:#c0392b;--accent-text:#fff;
+  --danger:#ff6b5e;--ok:#5fd18a;--input:#0f1215;--chip:#262a31;--focus:#ffb300;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-text-size-adjust:100%;padding-bottom:env(safe-area-inset-bottom)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{min-height:var(--tap);min-width:var(--tap);padding:0 16px;border-radius:10px;border:1px solid var(--line);background:var(--panel);cursor:pointer;font-weight:600}
+button.primary{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
+button.danger{color:var(--danger);border-color:var(--danger)}
+button.ghost{background:transparent;border-color:transparent}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+input,select,textarea{min-height:var(--tap);width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--input)}
+textarea{resize:vertical;min-height:72px}
+label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:0 0 4px}
+.wrap{max-width:1100px;margin:0 auto;padding:12px}
+header.bar{position:sticky;top:0;z-index:20;background:var(--panel);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+header.bar .wrap{display:flex;gap:8px;align-items:center;padding:8px 12px}
+header.bar h1{font-size:18px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+nav.tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 12px;max-width:1100px;margin:0 auto}
+nav.tabs button{flex:0 0 auto}
+nav.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 12px}
+.card h2{font-size:16px;margin:0 0 10px}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.row>*{flex:1 1 auto}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.hidden{display:none!important}
+.chip{display:inline-block;background:var(--chip);border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600}
+.loglist .item{display:flex;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--panel)}
+.loglist .item .info{flex:1;min-width:0;cursor:pointer}
+.loglist .item .t{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qa{position:sticky;top:var(--hdr,64px);z-index:10}
+.qa .times{display:grid;grid-template-columns:minmax(0,1fr) 110px auto;gap:8px;align-items:end}
+.qa .times>div{min-width:0}
+.qa .nowbtn{background:var(--ok);color:#fff;border-color:var(--ok);min-width:90px;font-size:18px}
+html[data-theme="dark"] .qa .nowbtn{color:#000}
+.qa .addrow{display:flex;gap:8px;margin-top:8px;align-items:stretch}
+.qa .addrow textarea{flex:1;min-height:var(--tap)}
+.qa .addrow button{min-width:96px;font-size:18px}
+.entries .e{display:grid;grid-template-columns:96px 1fr auto;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line);align-items:start}
+.entries .e .dt{font-variant-numeric:tabular-nums;font-weight:700}
+.entries .e .dt small{display:block;font-weight:400;color:var(--muted)}
+.entries .e .txt{white-space:pre-wrap;word-break:break-word}
+.entries .e .acts{display:flex;gap:4px}
+.entries .e .acts button{padding:0 10px}
+table.res{width:100%;border-collapse:collapse}
+table.res td,table.res th{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left;vertical-align:middle}
+table.res input{min-height:40px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:10px;z-index:100;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw}
+.toast.show{opacity:1}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--text);max-width:560px;width:92vw;padding:16px}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--chip);border-radius:12px;padding:12px;text-align:center}
+.stat b{display:block;font-size:28px;font-variant-numeric:tabular-nums}
+table.sum{width:100%;border-collapse:collapse;font-size:14px}
+table.sum th,table.sum td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left}
+table.sum td.n,table.sum th.n{text-align:right;font-variant-numeric:tabular-nums}
+table.sum th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
+table.sum tbody tr.click{cursor:pointer}
+.scroll{overflow-x:auto}
+footer.by{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 28px}
+.warn{background:#fff3cd;color:#5c4400;border:1px solid #e0c060;border-radius:10px;padding:10px;margin-bottom:12px}
+@media (max-width:600px){
+  .qa .times{grid-template-columns:minmax(0,1fr) 84px 80px}
+  .qa .times input{min-width:0;padding:10px 8px}
+  .qa .nowbtn{min-width:0;padding:0 6px}
+  .entries .e{grid-template-columns:72px 1fr}
+  .entries .e .acts{grid-column:1 / -1;justify-content:flex-end}
+  .stats b{font-size:22px}
+  header.bar h1{font-size:16px}
+}
+
+
+/* ---------- My Info ---------- */
+.mi-dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 12px;margin:0}
+.mi-dl dt{color:var(--muted);font-size:13px;font-weight:600}
+.mi-dl dd{margin:0;white-space:pre-wrap;word-break:break-word;font-weight:600}
+.mi-empty{color:var(--muted);font-style:italic}
+.mi-grid{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+@media (max-width:600px){.mi-dl{grid-template-columns:1fr}.mi-dl dd{margin-bottom:6px}}
+.tzb{display:inline-block;font-size:11px;font-weight:800;padding:0 5px;border-radius:5px;border:1.5px solid currentColor;margin-left:5px;vertical-align:1px;color:var(--accent)}
+.tzb.hidden{display:none!important}
+.lastline{margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;color:var(--muted)}
+.lastline b{color:var(--text)}
+.endrow{display:flex;justify-content:flex-end;margin-top:6px}
+.endrow button{min-height:40px;font-size:14px}
+html.field .endrow button{min-height:56px;font-size:17px}
+#aboutBody{margin:6px 0 0;padding-left:18px;font-size:14px;color:var(--muted)}
+#aboutBody li{margin:3px 0}
+/* ---------- FIELD MODE: gloves-friendly ---------- */
+html.field{--tap:64px}
+html.field body{font-size:19px}
+html.field label{font-size:15px}
+html.field button{font-size:18px;border-width:2px}
+html.field .qa .nowbtn{min-width:120px;font-size:24px}
+html.field .qa .addrow button{min-width:130px;font-size:24px}
+html.field .qa .times{grid-template-columns:minmax(0,1fr) 130px auto}
+html.field .qa .addrow textarea{min-height:96px;font-size:20px}
+html.field input,html.field select,html.field textarea{font-size:19px}
+html.field input[type="checkbox"]{width:30px!important;height:30px!important;min-height:30px!important}
+html.field .entries .e .acts button{min-width:64px;padding:0 14px}
+html.field nav.tabs button{font-size:17px}
+@media (max-width:600px){
+  html.field .qa .times{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  html.field .qa .times>div:first-child{grid-column:1 / -1}
+  html.field .qa .nowbtn{min-width:0;font-size:22px}
+  html.field .qa .addrow{flex-direction:column}
+  html.field .qa .addrow button{min-height:72px;width:100%}
+  html.field .entries .e{grid-template-columns:80px 1fr}
+}
+.toggle{display:flex;gap:12px;align-items:flex-start;margin:10px 0;font-weight:600;color:var(--text);font-size:16px}
+.toggle input{width:26px;height:26px;min-height:26px;flex:0 0 auto;margin-top:2px}
+.toggle.sub{margin-left:38px}
+.toggle.sub.off{opacity:.45}
+.gps .pin,.small .pin{vertical-align:-1px;margin-right:3px}.entries .e .gps{display:block;margin-top:2px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.toggle .small{display:block;font-weight:400;color:var(--muted)}
+.beta{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.06em;padding:0 5px;border-radius:5px;border:1.5px solid currentColor;margin-left:6px;vertical-align:2px;color:var(--accent);line-height:1.5}
+/* last-event ticker: very top of the app, one line */
+.ticker{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;line-height:20px;padding:3px 12px;color:var(--muted);border-bottom:1px solid var(--line);max-width:1100px;margin:0 auto}
+.ticker b{color:var(--text)}
+html.field .ticker{font-size:16px;line-height:24px}
+/* Easter egg menu (About) */
+#aboutVer{cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#eggMenu{margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:12px}
+#eggMenu h3{margin:0 0 4px;font-size:14px}
+#eggMenu .toggle{margin:8px 0}
+#eggMenu .eggfoot{display:flex;justify-content:flex-end}
+#eggHide{color:var(--accent);font-size:13px;font-weight:600;background:none;border:none;min-height:32px;min-width:0;padding:0 4px;text-decoration:underline;cursor:pointer}
+/* ---------- NIGHT VISION (red) : screen only ---------- */
+html[data-theme="night"]{
+  --bg:#000;--panel:#000;--text:#e01b1b;--muted:#b00000;--line:#560000;--accent:#a00000;--accent-text:#000;
+  --danger:#ff3030;--ok:#b00000;--input:#000;--chip:#1c0000;--focus:#ff3030;
+  color-scheme:dark;accent-color:#b00000;
+}
+@media screen{
+  html[data-theme="night"],html[data-theme="night"] body{background:#000;color:var(--text)}
+  html[data-theme="night"] *{scrollbar-color:#560000 #000;-webkit-tap-highlight-color:rgba(160,0,0,.35)}
+  html[data-theme="night"] ::selection{background:#600000;color:#ff3030}
+  html[data-theme="night"] button{background:#000;color:var(--text);border-color:#700000}
+  html[data-theme="night"] button.primary,html[data-theme="night"] nav.tabs button[aria-selected="true"]{background:#a00000;color:#000;border-color:#a00000}
+  html[data-theme="night"] button.danger{color:#ff3030;border-color:#a00000;background:#000}
+  html[data-theme="night"] button.ghost{background:transparent;border-color:transparent}
+  html[data-theme="night"] .qa .nowbtn{background:#280000;color:#ff3030;border-color:#b00000}
+  html[data-theme="night"] input,html[data-theme="night"] select,html[data-theme="night"] textarea{background:#000;color:var(--text);border-color:#600000;caret-color:#ff3030}
+  html[data-theme="night"] ::placeholder{color:#7a0000;opacity:1}
+  html[data-theme="night"] option,html[data-theme="night"] optgroup{background:#000;color:#e01b1b}
+  html[data-theme="night"] input:-webkit-autofill{-webkit-text-fill-color:#e01b1b;-webkit-box-shadow:0 0 0 1000px #000 inset;caret-color:#ff3030}
+  html[data-theme="night"] input[type="checkbox"],html[data-theme="night"] input[type="radio"]{accent-color:#b00000;-webkit-appearance:none;appearance:none;width:22px;height:22px;min-height:22px;padding:0;border:2px solid #b00000;border-radius:5px;background:#000;display:inline-grid;place-content:center;flex:0 0 auto}
+  html[data-theme="night"] input[type="checkbox"]:checked::after{content:"";width:11px;height:6px;border-left:3px solid #000;border-bottom:3px solid #000;transform:translateY(-2px) rotate(-45deg)}
+  html[data-theme="night"] input[type="checkbox"]:checked{background:#b00000}
+  html[data-theme="night"] ::-webkit-calendar-picker-indicator{filter:brightness(0) saturate(100%) invert(14%) sepia(97%) saturate(7400%) hue-rotate(358deg) brightness(92%);opacity:1;cursor:pointer}
+  html[data-theme="night"] ::-webkit-datetime-edit,html[data-theme="night"] ::-webkit-datetime-edit-fields-wrapper{color:var(--text)}
+  html[data-theme="night"] input::-webkit-datetime-edit-year-field,html[data-theme="night"] input::-webkit-datetime-edit-month-field,html[data-theme="night"] input::-webkit-datetime-edit-day-field,html[data-theme="night"] input::-webkit-datetime-edit-hour-field,html[data-theme="night"] input::-webkit-datetime-edit-minute-field,html[data-theme="night"] input::-webkit-datetime-edit-ampm-field{background-color:transparent;color:var(--text)}
+  html[data-theme="night"] textarea::-webkit-resizer{background:linear-gradient(135deg,transparent 0 55%,#700000 55% 65%,transparent 65% 75%,#700000 75% 85%,transparent 85%)}
+  html[data-theme="night"] ::-webkit-scrollbar{background:#000;width:10px;height:10px}
+  html[data-theme="night"] ::-webkit-scrollbar-thumb{background:#4a0000;border-radius:5px}
+  html[data-theme="night"] ::-webkit-scrollbar-corner{background:#000}
+  html[data-theme="night"] ::-webkit-list-button{filter:brightness(0) saturate(100%) invert(14%) sepia(97%) saturate(7400%) hue-rotate(358deg)}
+  html[data-theme="night"] button:focus-visible,html[data-theme="night"] input:focus-visible,html[data-theme="night"] select:focus-visible,html[data-theme="night"] textarea:focus-visible{outline:3px solid #ff3030;outline-offset:1px}
+  html[data-theme="night"] a{color:#ff3030}
+  html[data-theme="night"] .toast{background:#1c0000;color:#ff3030;border:1px solid #a00000}
+  html[data-theme="night"] .warn{background:#1c0000;color:#ff3030;border-color:#a00000}
+  html[data-theme="night"] dialog{background:#000;color:var(--text);border-color:#700000}
+  html[data-theme="night"] dialog::backdrop{background:rgba(0,0,0,.8)}
+  html[data-theme="night"] .tzb{color:#ff3030}
+  html[data-theme="night"] .stat{background:#140000;border:1px solid #500000}
+  html[data-theme="night"] .stat b{color:#ff3030}
+  html[data-theme="night"] .chip{background:#1c0000;color:#e01b1b}
+  html[data-theme="night"] img{filter:grayscale(1) sepia(1) saturate(8) hue-rotate(-50deg) brightness(.6)}
+}
+/* ---------- NIGHT VISION (green): generated from the red rules ---------- */
+html[data-theme="night"][data-night="green"]{
+  --bg:#000;--panel:#000;--text:#1bb81b;--muted:#009000;--line:#004700;--accent:#008300;--accent-text:#000;
+  --danger:#30d130;--ok:#009000;--input:#000;--chip:#001700;--focus:#30d130;
+  color-scheme:dark;accent-color:#009000;
+}
+@media screen{
+  html[data-theme="night"][data-night="green"],html[data-theme="night"][data-night="green"] body{background:#000;color:var(--text)}
+  html[data-theme="night"][data-night="green"] *{scrollbar-color:#004700 #000;-webkit-tap-highlight-color:rgba(0,131,0,.35)}
+  html[data-theme="night"][data-night="green"] ::selection{background:#004f00;color:#30d130}
+  html[data-theme="night"][data-night="green"] button{background:#000;color:var(--text);border-color:#005c00}
+  html[data-theme="night"][data-night="green"] button.primary,html[data-theme="night"][data-night="green"] nav.tabs button[aria-selected="true"]{background:#008300;color:#000;border-color:#008300}
+  html[data-theme="night"][data-night="green"] button.danger{color:#30d130;border-color:#008300;background:#000}
+  html[data-theme="night"][data-night="green"] button.ghost{background:transparent;border-color:transparent}
+  html[data-theme="night"][data-night="green"] .qa .nowbtn{background:#002100;color:#30d130;border-color:#009000}
+  html[data-theme="night"][data-night="green"] input,html[data-theme="night"][data-night="green"] select,html[data-theme="night"][data-night="green"] textarea{background:#000;color:var(--text);border-color:#004f00;caret-color:#30d130}
+  html[data-theme="night"][data-night="green"] ::placeholder{color:#006400;opacity:1}
+  html[data-theme="night"][data-night="green"] option,html[data-theme="night"][data-night="green"] optgroup{background:#000;color:#1bb81b}
+  html[data-theme="night"][data-night="green"] input:-webkit-autofill{-webkit-text-fill-color:#1bb81b;-webkit-box-shadow:0 0 0 1000px #000 inset;caret-color:#30d130}
+  html[data-theme="night"][data-night="green"] input[type="checkbox"],html[data-theme="night"][data-night="green"] input[type="radio"]{accent-color:#009000;-webkit-appearance:none;appearance:none;width:22px;height:22px;min-height:22px;padding:0;border:2px solid #009000;border-radius:5px;background:#000;display:inline-grid;place-content:center;flex:0 0 auto}
+  html[data-theme="night"][data-night="green"] input[type="checkbox"]:checked::after{content:"";width:11px;height:6px;border-left:3px solid #000;border-bottom:3px solid #000;transform:translateY(-2px) rotate(-45deg)}
+  html[data-theme="night"][data-night="green"] input[type="checkbox"]:checked{background:#009000}
+  html[data-theme="night"][data-night="green"] ::-webkit-calendar-picker-indicator{filter:brightness(0) saturate(100%) invert(14%) sepia(97%) saturate(7400%) hue-rotate(358deg) hue-rotate(120deg) brightness(70%);opacity:1;cursor:pointer}
+  html[data-theme="night"][data-night="green"] ::-webkit-datetime-edit,html[data-theme="night"][data-night="green"] ::-webkit-datetime-edit-fields-wrapper{color:var(--text)}
+  html[data-theme="night"][data-night="green"] input::-webkit-datetime-edit-year-field,html[data-theme="night"][data-night="green"] input::-webkit-datetime-edit-month-field,html[data-theme="night"][data-night="green"] input::-webkit-datetime-edit-day-field,html[data-theme="night"][data-night="green"] input::-webkit-datetime-edit-hour-field,html[data-theme="night"][data-night="green"] input::-webkit-datetime-edit-minute-field,html[data-theme="night"][data-night="green"] input::-webkit-datetime-edit-ampm-field{background-color:transparent;color:var(--text)}
+  html[data-theme="night"][data-night="green"] textarea::-webkit-resizer{background:linear-gradient(135deg,transparent 0 55%,#005c00 55% 65%,transparent 65% 75%,#005c00 75% 85%,transparent 85%)}
+  html[data-theme="night"][data-night="green"] ::-webkit-scrollbar{background:#000;width:10px;height:10px}
+  html[data-theme="night"][data-night="green"] ::-webkit-scrollbar-thumb{background:#003d00;border-radius:5px}
+  html[data-theme="night"][data-night="green"] ::-webkit-scrollbar-corner{background:#000}
+  html[data-theme="night"][data-night="green"] ::-webkit-list-button{filter:brightness(0) saturate(100%) invert(14%) sepia(97%) saturate(7400%) hue-rotate(358deg) hue-rotate(120deg) brightness(70%)}
+  html[data-theme="night"][data-night="green"] button:focus-visible,html[data-theme="night"][data-night="green"] input:focus-visible,html[data-theme="night"][data-night="green"] select:focus-visible,html[data-theme="night"][data-night="green"] textarea:focus-visible{outline:3px solid #30d130;outline-offset:1px}
+  html[data-theme="night"][data-night="green"] a{color:#30d130}
+  html[data-theme="night"][data-night="green"] .toast{background:#001700;color:#30d130;border:1px solid #008300}
+  html[data-theme="night"][data-night="green"] .warn{background:#001700;color:#30d130;border-color:#008300}
+  html[data-theme="night"][data-night="green"] dialog{background:#000;color:var(--text);border-color:#005c00}
+  html[data-theme="night"][data-night="green"] dialog::backdrop{background:rgba(0,0,0,.8)}
+  html[data-theme="night"][data-night="green"] .tzb{color:#30d130}
+  html[data-theme="night"][data-night="green"] .stat{background:#001000;border:1px solid #004200}
+  html[data-theme="night"][data-night="green"] .stat b{color:#30d130}
+  html[data-theme="night"][data-night="green"] .chip{background:#001700;color:#1bb81b}
+  html[data-theme="night"][data-night="green"] img{filter:grayscale(1) sepia(1) saturate(8) hue-rotate(-50deg) brightness(.6)}
+}
+/* ================= PRINT ================= */
+#printRoot{position:absolute;left:-20000px;top:0;visibility:hidden}
+.sheet{width:7.7in;height:10.1in;background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;font-size:8.5pt;display:flex;flex-direction:column;overflow:hidden}
+.sheet .ftitle{text-align:center;font-size:13pt;margin:0 0 4px}
+.sheet table{border-collapse:collapse;width:100%;table-layout:fixed}
+.sheet td,.sheet th{border:1px solid #000;padding:2px 4px;vertical-align:top;font-weight:normal;text-align:left}
+.sheet .lbl{font-size:7.5pt}
+.sheet .val{font-size:9pt;font-weight:bold;font-family:"Courier New",Courier,monospace;word-break:break-word}
+.sheet .sec{font-size:7.5pt;border-bottom:none}
+.sheet .colh th{text-align:center;font-size:7.5pt;padding:1px}
+.sheet .ruled td{height:.24in;font-size:9pt;font-family:"Courier New",Courier,monospace;padding:2px 4px;vertical-align:top;white-space:pre-wrap;word-break:break-word}
+.sheet .ruled td.dtc{white-space:nowrap;font-size:8.5pt}
+.sheet .actwrap{flex:1 1 auto;overflow:hidden;min-height:0;border-left:1px solid #000;border-right:1px solid #000}
+.sheet .actwrap table td,.sheet .actwrap table th{border-top:none}
+.sheet .actwrap table tr td:first-child,.sheet .actwrap table tr th:first-child{border-left:none}
+.sheet .actwrap table tr td:last-child,.sheet .actwrap table tr th:last-child{border-right:none}
+.sheet .foot td{height:.26in;vertical-align:bottom}
+.sheet .uline{display:inline-block;border-bottom:1px solid #000;min-width:1.2in;font-family:"Courier New",monospace;font-weight:bold;font-size:9pt;padding:0 2px}
+.sheet .note{font-size:7pt;color:#444}
+/* priority marks + internal entries (screen only) */
+.pmk{font-weight:900;letter-spacing:.04em}
+.pmk.p0{color:var(--muted);opacity:.35}
+.pmk.p1,.entries .e .prim.p1{color:#1559b0}.pmk.p2,.entries .e .prim.p2{color:#9a5500}.pmk.p3,.entries .e .prim.p3{color:#c41c1c}
+html[data-theme="dark"] .pmk.p1,html[data-theme="dark"] .entries .e .prim.p1{color:#6cb4ff}html[data-theme="dark"] .pmk.p2,html[data-theme="dark"] .entries .e .prim.p2{color:#ffb340}html[data-theme="dark"] .pmk.p3,html[data-theme="dark"] .entries .e .prim.p3{color:#ff6b5e}
+.entries .e .prim{min-height:28px;min-width:28px;padding:0 4px;margin:0 6px 0 0;border:none;background:transparent;font-weight:900;font-size:15px;line-height:20px;border-radius:6px;letter-spacing:.04em}
+.entries .e .prim.p0{color:var(--muted);opacity:.3}
+html.field .entries .e .prim{min-height:40px;min-width:40px;font-size:19px}
+.qa .qbtns{display:flex;gap:8px;align-items:stretch}
+.qa .qbtns button{font-size:16px}
+.qa .qbtns .pribtn{min-width:52px;padding:0 8px;font-size:18px}
+.qa .qbtns .pribtn.on{border-width:2px}
+.qa .qbtns #btnInt{display:inline-flex;align-items:center;gap:5px;padding:0 12px}
+.qa .qbtns #btnAdd{min-width:96px;font-size:18px}
+html.field .qa .qbtns .pribtn,html.field .qa .qbtns #btnInt{font-size:20px}
+@media (max-width:600px){.qa .addrow{flex-wrap:wrap}.qa .addrow textarea{flex:1 1 100%}.qa .qbtns{flex:1 1 100%}.qa .qbtns #btnAdd{flex:1 1 auto}}
+.ibadge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:800;padding:0 6px;border:1.5px dashed currentColor;border-radius:6px;color:var(--muted);margin-right:6px;vertical-align:1px;line-height:16px;white-space:nowrap}
+.entries .e.internal{background:var(--chip);border-left:3px dashed var(--muted);padding-left:8px;border-radius:6px}
+.entries .e.internal .txt{font-style:italic}
+.pf{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px}
+.pf button{min-height:34px;min-width:0;padding:0 12px;border-radius:999px;font-size:14px;display:inline-flex;align-items:center;gap:4px}
+.pf button[aria-pressed="true"]{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
+.pfcount{font-size:13px;font-weight:700;color:var(--text);margin-left:4px}
+html.field .pf button{min-height:48px;font-size:17px}
+@media screen{
+  html[data-theme="night"] .pmk.p1,html[data-theme="night"] .entries .e .prim.p1{color:#900000}
+  html[data-theme="night"] .pmk.p2,html[data-theme="night"] .entries .e .prim.p2{color:#d01010}
+  html[data-theme="night"] .pmk.p3,html[data-theme="night"] .entries .e .prim.p3{color:#ff3030}
+  html[data-theme="night"] .entries .e.internal{background:#140000;border-left-color:#700000}
+  html[data-theme="night"] .ibadge{color:#b00000}
+  html[data-theme="night"][data-night="green"] .pmk.p1,html[data-theme="night"][data-night="green"] .entries .e .prim.p1{color:#007a00}
+  html[data-theme="night"][data-night="green"] .pmk.p2,html[data-theme="night"][data-night="green"] .entries .e .prim.p2{color:#1bb81b}
+  html[data-theme="night"][data-night="green"] .pmk.p3,html[data-theme="night"][data-night="green"] .entries .e .prim.p3{color:#30d130}
+  html[data-theme="night"][data-night="green"] .entries .e.internal{background:#001400;border-left-color:#007000}
+  html[data-theme="night"][data-night="green"] .ibadge{color:#009000}
+}
+/* ---------- ICS 309 specific ---------- */
+.qa .calls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:8px}
+.qa .calls .cs{display:flex;gap:6px}
+.qa .calls .cs input.msgno{flex:0 0 76px;width:76px}
+.qa .calls input.call{text-transform:uppercase}
+.qa .calls input.call::placeholder{text-transform:none}
+.entries .e .ft{font-weight:800;font-variant-numeric:tabular-nums;word-break:break-word}
+.entries .e .ft .arr{color:var(--muted);font-weight:600;margin:0 4px}
+.entries .e .ft .mn{font-weight:600;color:var(--muted);font-size:13px;margin-left:3px}
+.entries .e .msg{display:block;white-space:pre-wrap;word-break:break-word}
+details.roster{margin:0 0 8px;font-size:14px}
+details.roster summary{cursor:pointer;font-weight:700;color:var(--muted);min-height:32px;line-height:32px}
+details.roster .rl{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0 6px}
+details.roster .rl .chip b{font-variant-numeric:tabular-nums;margin-left:4px;opacity:.7}
+.netlist .net{display:flex;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--panel)}
+.netlist .net .info{flex:1;min-width:0}
+.netlist .net .t{font-weight:700}
+.netlist .net .notes{white-space:pre-wrap;word-break:break-word}
+.netpick{display:grid;gap:8px;margin-top:8px}
+.netpick button{text-align:left;padding:8px 14px;min-height:56px}
+.netpick button small{display:block;font-weight:400;color:var(--muted)}
+.netpick button.primary small{color:inherit;opacity:.85}
+html[data-theme="night"] .netpick button small{color:var(--muted)}
+/* ---------- Roll call ---------- */
+.modesw{display:flex;gap:0;margin:0 0 10px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+.modesw button{flex:1 1 0;border:none;border-radius:0;background:transparent;font-weight:700}
+.modesw button[aria-pressed="true"]{background:var(--accent);color:var(--accent-text)}
+.rc .rcTop{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.rc .rcReg{font-weight:700;color:var(--muted);font-size:14px}
+.rc .rcProg{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.rc .rcTq{color:var(--danger);font-weight:800}
+.rc .rcCounty{font-size:34px;font-weight:800;line-height:1.15;text-align:center;margin:6px 0 10px;word-break:break-word}
+.rc .rcIns{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;align-items:center;margin-bottom:8px}
+.rcchip{display:inline-flex;align-items:center;gap:4px;border:2px solid var(--accent);border-radius:999px;padding:2px 3px 2px 12px;background:var(--panel)}
+.rcchip b{font-size:17px;margin-right:4px}
+.rcchip button{min-height:36px;min-width:0;padding:0 10px;border-radius:999px;font-size:14px;font-weight:700}
+.rcchip button.x{padding:0 10px;border-color:transparent;background:transparent;color:var(--muted)}
+.rcchip.tr{border-color:var(--danger)}
+.rcchip button[aria-pressed="true"]{background:var(--danger);color:#fff;border-color:var(--danger)}
+html[data-theme="night"] .rcchip button[aria-pressed="true"]{color:#000}
+.rc .rcSug{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.rc .rcSug button{min-width:0;padding:0 14px;border-style:dashed;font-weight:700}
+.rc .rcEntry,.rc .rcMsgRow{display:flex;gap:8px;margin-bottom:8px}
+.rc .rcEntry input{flex:1 1 auto;min-width:0;text-transform:uppercase;font-size:18px}
+.rc .rcEntry input::placeholder{text-transform:none}
+.rc .rcEntry button,.rc .rcMsgRow button{flex:0 0 auto}
+.rc .rcMsgRow textarea{flex:1 1 auto;min-width:0}
+.rc .rcGo{display:flex;justify-content:center;margin-bottom:8px}
+.rc .rcGo button{min-width:180px}
+.rc .rcNav{display:flex;gap:8px;align-items:stretch}
+.rc .rcNav>button:first-child{flex:0 0 auto;min-width:56px}
+.rc .rcNav select{flex:0 1 150px;min-width:0;width:auto}
+.rc .rcNav .rcBig{flex:1 1 auto;min-height:60px;font-size:20px;font-weight:800;white-space:nowrap;padding:0 10px}
+.rc .rcHint{margin-top:6px;text-align:right}
+.rc .rcSum{width:100%;margin:4px 0 10px}
+.rc .rcMissed{margin-bottom:10px;line-height:1.9}
+.rc button.lnk{min-height:0;min-width:0;padding:0 2px;border:none;background:none;color:var(--accent);text-decoration:underline;font-weight:600;font-size:14px}
+.ordhd{display:flex;gap:8px;align-items:flex-end;justify-content:space-between;margin-top:10px;flex-wrap:wrap}
+.ordhd select{width:auto;max-width:100%;flex:0 1 auto}
+#nOrder{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px}
+html.field .rc .rcCounty{font-size:46px}
+html.field .rc .rcNav .rcBig{min-height:84px;font-size:26px}
+html.field .rcchip b{font-size:21px}
+html.field .rcchip button{min-height:48px;font-size:17px}
+html.field .rc .rcSug button{min-height:56px;font-size:19px}
+html.field .rc .rcEntry input{font-size:22px}
+html.field .modesw button{min-height:56px}
+@media (max-width:600px){
+  .rc .rcCounty{font-size:30px}
+  html.field .rc .rcCounty{font-size:40px}
+  .rc .rcNav select{flex-basis:122px}
+  .rc .rcNav .rcBig{font-size:18px}
+  html.field .rc .rcNav .rcBig{font-size:21px}
+}
+/* CW sounds sub-controls */
+.cwsub{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;margin:0 0 10px 38px}
+.cwsub label{margin:0;font-size:14px}
+.cwsub input[type=range]{width:100%;min-height:32px;padding:0}
+/* ---------- EASTER EGG: S-meter (screen only) ---------- */
+.tickrow{display:flex;align-items:center;border-bottom:1px solid var(--line)}
+.tickrow .ticker{flex:1 1 auto;min-width:0;border-bottom:none}
+.smeter{flex:0 0 auto;display:flex;align-items:flex-end;gap:2px;padding:0 10px 0 4px;height:20px}
+.smeter i{display:block;width:4px;height:6px;background:var(--line);border-radius:1px}
+.smeter i:nth-child(n+4){height:9px}.smeter i:nth-child(n+7){height:12px}.smeter i:nth-child(n+10){height:15px}
+.smeter i.on{background:var(--ok)}
+.smeter i.hot{background:var(--danger)}
+.smeter span{font:700 11px/1 ui-monospace,Menlo,Consolas,monospace;color:var(--muted);margin-left:5px;min-width:46px}
+/* ---------- EASTER EGG: amber CRT terminal (screen only) ---------- */
+@media screen{
+  html[data-egg="crt"]{--bg:#0b0700;--panel:#120c01;--text:#ffb000;--muted:#c98a00;--line:#5a3c00;--accent:#ffb000;--accent-text:#120c01;--danger:#ff7a1a;--ok:#ffb000;--input:#0b0700;--chip:#2a1c00;--focus:#ffd25a;color-scheme:dark}
+  html[data-egg="crt"] body{background:radial-gradient(ellipse at center,#1a1000 0%,#0b0700 70%,#050300 100%);background-attachment:fixed;font-family:"Courier New",Courier,ui-monospace,monospace;text-shadow:0 0 3px rgba(255,176,0,.55)}
+  html[data-egg="crt"] body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 1px,transparent 1px 3px)}
+  html[data-egg="crt"] header.bar{background:#120c01;border-bottom:2px solid #ffb000}
+  html[data-egg="crt"] header.bar h1::before{content:"> "}
+  html[data-egg="crt"] header.bar h1::after{content:"\2588";animation:crtblink 1s steps(1) infinite;margin-left:2px}
+  html[data-egg="crt"] button,html[data-egg="crt"] input,html[data-egg="crt"] select,html[data-egg="crt"] textarea{font-family:"Courier New",Courier,ui-monospace,monospace;background:#0b0700;color:#ffb000;border-color:#7a5200;caret-color:#ffd25a}
+  html[data-egg="crt"] ::placeholder{color:#8a6000;opacity:1}
+  html[data-egg="crt"] button.primary,html[data-egg="crt"] nav.tabs button[aria-selected="true"],html[data-egg="crt"] .pf button[aria-pressed="true"]{background:#ffb000;color:#120c01;border-color:#ffb000;text-shadow:none}
+  html[data-egg="crt"] button.ghost{background:transparent;border-color:transparent}
+  html[data-egg="crt"] .qa .nowbtn{background:#2a1c00;color:#ffd25a;border-color:#ffb000}
+  html[data-egg="crt"] .card{border:1px solid #7a5200;border-radius:4px;box-shadow:0 0 10px rgba(255,176,0,.12) inset}
+  html[data-egg="crt"] .toast{background:#2a1c00;color:#ffd25a;border:1px solid #ffb000}
+  html[data-egg="crt"] dialog{background:#120c01;color:#ffb000;border-color:#ffb000;font-family:"Courier New",Courier,monospace}
+  html[data-egg="crt"] input[type="checkbox"]{accent-color:#ffb000}
+  html[data-egg="crt"] .pmk.p1,html[data-egg="crt"] .entries .e .prim.p1{color:#c98a00}
+  html[data-egg="crt"] .pmk.p2,html[data-egg="crt"] .entries .e .prim.p2{color:#ffd25a}
+  html[data-egg="crt"] .pmk.p3,html[data-egg="crt"] .entries .e .prim.p3{color:#ff7a1a}
+  html[data-egg="crt"] .entries .e .prim{background:transparent}
+  html[data-egg="crt"] .entries .e.internal{background:#1e1400}
+}
+@keyframes crtblink{50%{opacity:0}}
+/* PRINT: ICS 309 log table */
+.sheet .ruled td.tc{white-space:nowrap;font-size:8.5pt;text-align:center}
+.sheet .ruled td.cs{font-size:8.5pt;white-space:normal;word-break:break-word}
+.sheet .ruled td.mn{font-size:8.5pt;text-align:center}
+@page{size:letter portrait;margin:0.4in}
+@media print{
+  html,html[data-theme]{color-scheme:light!important}
+  html,body{background:#fff!important;color:#000!important;text-shadow:none!important}
+  body::after{display:none!important}
+  body>*:not(#printRoot){display:none!important}
+  .noprint{display:none!important}
+  #printRoot{position:static;left:auto;visibility:visible}
+  .sheet{break-after:page;page-break-after:always}
+  .sheet:last-child{break-after:auto;page-break-after:auto}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+/* --- shared: comu-shared/ui.css --- */
+/* ===== COMU shared UI (ICS 214, ICS 309, T-Card): one home bar, one Advanced/About look ===== */
+.homebar{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:10px;margin:0 0 10px}
+.homebar2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:0 0 12px}
+.homebar button,.homebar2 button{width:100%;min-width:0;padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#advCard .toggle .beta{vertical-align:2px}
+.cwsub{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;margin:0 0 10px 38px}
+.cwsub label{margin:0;font-size:14px}
+.cwsub input[type=range]{width:100%;min-height:32px;padding:0}
+#eggMenu .toggle .small{display:block;font-weight:400;color:var(--muted)}
+/* APK shell: home (launcher) button, shown only inside the Android app */
+#btnApkHome{display:none}
+html.apk #btnApkHome{display:inline-flex;align-items:center;justify-content:center;font-size:20px}
+@media print{#btnApkHome{display:none!important}}
+.bkrow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.bkrow button{width:100%;min-width:0;padding:0 10px}
+@media (max-width:360px){.bkrow{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="tickrow noprint"><div class="ticker" id="lastLine" aria-live="polite">No messages yet</div><div id="smeter" class="smeter hidden" aria-hidden="true"></div></div><div class="wrap">
+  <button class="ghost" id="btnHome" title="All logs" aria-label="All logs">&#9776;</button>
+  <h1 id="title">ICS 309 Communications Log</h1>
+  <button id="btnTheme" title="Switch theme" aria-label="Switch theme">&#9790;</button>
+</div></header>
+
+<main id="app">
+  <!-- LOGS LIST -->
+  <section id="viewLogs" class="wrap">
+    <div id="storageWarn" class="warn hidden"></div>
+    <div class="homebar">
+      <button class="primary" id="btnNew">+ New ICS 309</button>
+      <button id="btnNets">Nets</button>
+    </div>
+    <div class="homebar2">
+      <button id="btnPace">My Info</button>
+      <button id="btnAbout" class="ghost">About</button>
+    </div>
+    <div class="loglist" id="logList"></div>
+    <div class="card">
+      <h2>Backup <span class="small muted">(all logs + nets)</span></h2>
+      <div class="row bkrow">
+        <button id="btnExportAll">Export JSON</button>
+        <button id="btnImport">Import JSON</button>
+        <input type="file" id="fileImport" accept=".json,application/json" class="hidden">
+      </div>
+    </div>
+    <div class="card noprint" id="advCard">
+      <h2>Advanced</h2>
+      <label class="toggle"><input type="checkbox" id="optField"><span>Big-button field mode<span class="small">Gloves-friendly; keeps the screen on.</span></span></label>
+      <label class="toggle"><input type="checkbox" id="optUTC"><span>UTC time (Z)<span class="small">New logs use UTC, 24h.</span></span></label>
+      <label class="toggle"><input type="checkbox" id="optCw"><span>CW sounds<span class="small">Morse tones: dit on check-in, “R” on Add / Copy / traffic, “SK” at close.</span></span></label>
+      <div id="cwSub" class="cwsub hidden"><label for="optCwVol">Volume</label><input type="range" id="optCwVol" min="5" max="100" step="5"><label for="optCwPitch">Pitch <span class="small muted" id="optCwPitchV"></span></label><input type="range" id="optCwPitch" min="400" max="1000" step="50"></div>
+      <label class="toggle"><input type="checkbox" id="optGPS"><span>GPS tagging <span class="beta" title="Beta: phones usually block location for a locally opened file">BETA</span><span class="small">Adds device location to new entries (CSV/JSON).</span></span></label>
+      <label class="toggle"><input type="checkbox" id="optMsgNo"><span>Message # fields<span class="small">Adds From/To Msg # boxes to the entry bar.</span></span></label>
+      <label class="toggle"><input type="checkbox" id="optRcNoResp"><span>Roll call: log “No response”<span class="small">Adds a row for a county with no check-ins.</span></span></label>
+      <div class="toggle" style="align-items:center"><label for="optNightColor" style="margin:0;font-size:16px;color:var(--text)">Night vision color</label><select id="optNightColor" style="width:auto;min-width:130px"><option value="red">Red</option><option value="green">Green</option></select></div>
+    </div>
+  </section>
+
+  <!-- ONE LOG -->
+  <section id="viewLog" class="hidden">
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="tLog" aria-selected="true">5. Comms Log</button>
+      <button role="tab" data-tab="tHeader">Header</button>
+      <button role="tab" data-tab="tOut">Print / Export</button>
+    </nav>
+    <div class="wrap">
+      <div id="tLog" class="tab">
+        <div class="modesw noprint" id="modeSw" role="group" aria-label="Logging mode"><button type="button" data-mode="free" aria-pressed="true">Freeform</button><button type="button" data-mode="rc" aria-pressed="false">Roll call</button></div>
+        <div class="card rc hidden noprint" id="rcPanel" aria-live="polite"></div>
+        <div class="card qa" id="quickAdd">
+          <div class="times">
+            <div><label for="qDate">Date</label><input type="date" id="qDate"></div>
+            <div><label for="qTime">Time (24h)<span class="tzb hidden">UTC</span></label><input id="qTime" inputmode="numeric" placeholder="Auto" maxlength="5" autocomplete="off"></div>
+            <button class="nowbtn" id="btnNow" title="Set date/time to now">Now</button>
+          </div>
+          <div class="calls">
+            <div><label for="qFrom">From</label><div class="cs"><input id="qFrom" class="call" list="dlCalls" placeholder="Call sign / ID" autocomplete="off" autocapitalize="characters" spellcheck="false"><input id="qFromMsg" class="msgno hidden" placeholder="Msg #" aria-label="From message number" autocomplete="off"></div></div>
+            <div><label for="qTo">To</label><div class="cs"><input id="qTo" class="call" list="dlCalls" placeholder="Call sign / ID" autocomplete="off" autocapitalize="characters" spellcheck="false"><input id="qToMsg" class="msgno hidden" placeholder="Msg #" aria-label="To message number" autocomplete="off"></div></div>
+          </div>
+          <datalist id="dlCalls"></datalist>
+          <div class="addrow">
+            <textarea id="qText" rows="2" placeholder="Message… (Enter = add, Shift+Enter = new line)" enterkeyhint="send"></textarea>
+            <div class="qbtns"><button id="btnPri" class="pribtn" type="button" title="Priority for the next entry: None (tap to cycle)" aria-label="Priority for the next entry: None"><span class="pmk p0">!</span></button><button id="btnInt" type="button" title="Add as an internal entry (left off the printed 309)"><svg class="lock" viewBox="0 0 12 14" width="10" height="12" aria-hidden="true"><path fill="currentColor" d="M3 6V4a3 3 0 0 1 6 0v2h1a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h1zm1.5 0h3V4a1.5 1.5 0 0 0-3 0v2z"/></svg>Internal</button><button class="primary" id="btnAdd">Add</button></div>
+          </div>
+          <div class="row small muted" style="margin-top:6px;align-items:center">
+            <label style="display:flex;gap:8px;align-items:center;margin:0;font-weight:500;flex:0 1 auto"><input type="checkbox" id="optNewest" style="width:22px;min-height:22px"> Newest first</label>
+            <span id="entryCount" style="text-align:right"></span>
+          </div>
+          <div class="endrow noprint"><button id="btnEndOp">End op period &amp; begin next</button></div>
+        </div>
+        <div class="card entries" id="entries"></div>
+      </div>
+
+      <div id="tHeader" class="tab hidden">
+        <div class="card">
+          <div class="row" style="align-items:flex-end"><div style="flex:1 1 220px"><label for="hNet">Net</label><select id="hNet"></select></div></div>
+          <div class="grid" style="margin-top:10px">
+            <div><label for="hIncident">1. Incident Name</label><input id="hIncident" data-f="incidentName"></div>
+          </div>
+          <h2 style="margin-top:14px">2. Operational Period</h2>
+          <div class="grid">
+            <div><label for="hFromDate">Date From</label><input type="date" id="hFromDate" data-f="opFromDate"></div>
+            <div><label for="hFromTime">Time From (24h)<span class="tzb hidden">UTC</span></label><div class="row"><input id="hFromTime" data-f="opFromTime" data-time inputmode="numeric" placeholder="HH:MM" maxlength="5"><button data-nowfor="opFrom" style="flex:0 0 auto">Now</button></div></div>
+            <div><label for="hToDate">Date To</label><input type="date" id="hToDate" data-f="opToDate"></div>
+            <div><label for="hToTime">Time To (24h)<span class="tzb hidden">UTC</span></label><div class="row"><input id="hToTime" data-f="opToTime" data-time inputmode="numeric" placeholder="HH:MM" maxlength="5"><button data-nowfor="opTo" style="flex:0 0 auto">Now</button></div></div>
+          </div>
+          <div class="row" style="margin-top:8px;align-items:center"><span style="flex:1 1 auto"></span><label for="hBasis" style="margin:0;flex:0 0 auto">Time basis</label><select id="hBasis" data-f="timeBasis" style="width:auto;flex:0 0 auto"><option value="local">Local</option><option value="UTC">UTC (Z)</option></select></div>
+          <h2 style="margin-top:14px">3. Radio Net</h2>
+          <div class="grid">
+            <div><label for="hNetName">Net name or position/tactical call</label><input id="hNetName" data-f="netName"></div>
+            <div><label for="hNetFreq">Talkgroup / channel / frequency</label><input id="hNetFreq" data-f="netFreq"></div>
+            <div><label for="hNcs">Net control station</label><input id="hNcs" data-f="ncs" class="call" autocapitalize="characters"></div>
+            <div><label for="hRole">My role</label><input id="hRole" data-f="role" list="dlRoles"></div>
+          </div>
+          <h2 style="margin-top:14px">4. Radio Operator</h2>
+          <div class="grid">
+            <div><label for="hOpName">Name</label><input id="hOpName" data-f="opName"></div>
+            <div><label for="hOpCall">Call sign</label><input id="hOpCall" data-f="opCall" autocapitalize="characters"></div>
+          </div>
+          <h2 style="margin-top:14px">6–7. Prepared by</h2>
+          <div class="grid">
+            <div><label for="pName">Name</label><input id="pName" data-f="prepName"></div>
+            <div><label for="pPos">Position / call sign</label><input id="pPos" data-f="prepPosition"></div>
+            <div><label for="pSig">Signature <span class="small">(optional)</span></label><input id="pSig" data-f="prepSignature" placeholder="/s/ typed name (optional)"></div>
+            <div><label for="pDate">Date prepared</label><input type="date" id="pDate" data-f="prepDate"></div>
+            <div><label for="pTime">Time prepared (24h)<span class="tzb hidden">UTC</span></label><div class="row"><input id="pTime" data-f="prepTime" data-time inputmode="numeric" placeholder="HH:MM" maxlength="5"><button data-nowfor="prep" style="flex:0 0 auto">Now</button></div></div>
+          </div>
+          <datalist id="dlRoles"></datalist>
+        </div>
+      </div>
+
+      <div id="tOut" class="tab hidden">
+        <div class="card">
+          <h2>Print / PDF</h2>
+          <div class="row"><button class="primary" id="btnPrint">Print ICS 309</button></div>
+        </div>
+        <div class="card">
+          <h2>Export this log</h2>
+          <div class="row"><button id="btnCsv">Export CSV</button><button id="btnJsonOne">Export JSON (this log)</button></div>
+        </div>
+        <div class="card">
+          <h2>Manage</h2>
+          <div class="row"><button class="danger" id="btnDelLog">Delete this log</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NETS -->
+  <section id="viewNets" class="wrap hidden noprint">
+    <div class="row" style="margin-bottom:12px"><button class="primary" id="btnAddNet">+ Add net</button></div>
+    <div class="netlist" id="netList"></div>
+  </section>
+
+  <!-- MY INFO -->
+  <section id="viewPace" class="wrap hidden noprint">
+    <div class="card">
+      <div class="row" style="align-items:center;margin-bottom:8px">
+        <h2 style="margin:0;flex:1 1 auto">My info</h2>
+        <button id="paceToggle" class="primary" style="flex:0 0 auto">Edit</button>
+      </div>
+      <div id="paceRead"></div>
+      <div id="paceEdit" class="hidden">
+        <div class="grid mi-grid">
+          <div><label for="pcName">Name</label><input id="pcName" data-pc="name" autocomplete="off"></div>
+          <div><label for="pcCall">Call sign</label><input id="pcCall" data-pc="callsign" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
+          <div><label for="pcPosSel">ICS position</label><select id="pcPosSel"></select><input id="pcPos" data-pc="position" autocomplete="off" class="hidden" placeholder="Type the position" aria-label="Other ICS position" style="margin-top:6px"></div>
+          <div><label for="pcAgency">Home Agency and Unit</label><input id="pcAgency" data-pc="agency" autocomplete="off"></div>
+        </div>
+        <div class="row" style="margin-top:10px;justify-content:flex-end"><button id="paceClear" class="danger" style="flex:0 0 auto">Clear</button><button id="paceSave" class="primary" style="flex:0 0 auto">Save</button></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="by noprint" id="credit">ICS 309 Communications Log by lambdadriver · v<span class="appver"></span> · offline, data stays on this device</footer>
+</main>
+
+<dialog id="dlg"><form method="dialog" id="dlgForm"><div id="dlgBody"></div><div class="row" style="margin-top:14px;justify-content:flex-end" id="dlgBtns"></div></form></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="printRoot" aria-hidden="true"></div>
+
+<script>
+(function(){
+'use strict';
+var KEY='ics309.v1';
+var APP_VERSION='1.5';
+var ROLES=['Net Control (NCS)','Alternate NCS','Participant','Relay','Logger'];
+var $=function(id){return document.getElementById(id)};
+var state;
+var storageOK=true;
+
+/* ---------- utils (shared with the ICS 214 app) ---------- */
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function pad(n){return (n<10?'0':'')+n}
+function todayISO(d){d=d||new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function nowHM(d){d=d||new Date();return pad(d.getHours())+':'+pad(d.getMinutes())}
+function isUTC(l){return !!(l&&l.timeBasis==='UTC')}
+function nowP(utc,d){d=d||new Date();return utc?{d:d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate()),t:pad(d.getUTCHours())+':'+pad(d.getUTCMinutes())}:{d:todayISO(d),t:nowHM(d)}}
+function zt(l,t){return t&&isUTC(l)?t+'Z':(t||'')}
+/* --- shared: comu-shared/esc.js --- */
+/* esc(): the one HTML escaper for every COMU app. Use it on ANY stored or imported value (IDs included) that goes into innerHTML, an attribute or a template string. */
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+function normTime(v){
+  v=String(v||'').trim(); if(!v) return '';
+  var m=v.match(/^(\d{1,2}):?(\d{2})$/); if(!m) return null;
+  var h=+m[1], mi=+m[2]; if(h>23||mi>59) return null;
+  return pad(h)+':'+pad(mi);
+}
+function usDate(iso){if(!iso) return ''; var p=iso.split('-'); return p[1]+'/'+p[2]+'/'+p[0]}
+function shortDate(iso){if(!iso) return ''; var p=iso.split('-'); return p[1]+'/'+p[2]}
+function toast(msg){var t=$('toast'),dl=$('dlg'); if(dl&&dl.open){if(t.parentNode!==dl)dl.appendChild(t)} else if(t.parentNode!==document.body) document.body.appendChild(t);t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(function(){t.classList.remove('show')},2200)}
+function download(name,text,type){
+  var blob=new Blob([text],{type:type||'text/plain'});
+  var url=URL.createObjectURL(blob); var a=document.createElement('a');
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url)},1500);
+}
+function safeName(s){return String(s||'log').replace(/[^\w\-]+/g,'_').replace(/_+/g,'_').slice(0,60)||'log'}
+function csvCell(v){v=String(v==null?'':v);return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function csvRows(rows){return '\uFEFF'+rows.map(function(r){return r.map(csvCell).join(',')}).join('\r\n')+'\r\n'}
+function normCall(v){v=String(v||'').trim().replace(/\s+/g,' '); return /^[a-z0-9\/\-]+$/i.test(v)&&/\d/.test(v)?v.toUpperCase():v} /* call signs upper-case; tactical IDs kept as typed */
+function isNCSRole(r){return /\bncs\b|net control/i.test(r||'')&&!/alt/i.test(r||'')}
+
+/* --- shared: comu-shared/cw.js --- */
+/* ---------- CW sounds: shared engine for ICS 214, ICS 309 and T-Card (needs state.settings) ---------- */
+var MORSE={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..',0:'-----',1:'.----',2:'..---',3:'...--',4:'....-',5:'.....',6:'-....',7:'--...',8:'---..',9:'----.'};
+var cwCtx=null, cwLast=null;
+function cwPitch(){var v=+state.settings.cwPitch;return v>=400&&v<=1000?v:700}
+function cwVol(){var v=state.settings.cwVol;v=v==null?0.6:+v;return isFinite(v)?Math.max(0,Math.min(1,v)):0.6}
+function cwPlay(word){
+  if(!state.settings.cw) return false;
+  var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return false;
+  try{
+    if(!cwCtx) cwCtx=new AC(); if(cwCtx.state==='suspended'&&cwCtx.resume) cwCtx.resume();
+    var dot=0.06, t=cwCtx.currentTime+0.03, osc=cwCtx.createOscillator(), g=cwCtx.createGain();
+    var hz=cwPitch(), vol=cwVol(); osc.type='sine'; osc.frequency.value=hz; g.gain.setValueAtTime(0,t); osc.connect(g); g.connect(cwCtx.destination);
+    var code=String(word).split('').map(function(c){return MORSE[c]||''}).join(' ');
+    code.split('').forEach(function(s){
+      if(s===' '){t+=dot*2;return}
+      var d=s==='-'?dot*3:dot; g.gain.setTargetAtTime(0.4*vol,t,0.004); g.gain.setTargetAtTime(0,t+d,0.004); t+=d+dot;
+    });
+    osc.start(); osc.stop(t+0.1); cwLast={word:word,code:code,hz:hz,vol:vol,at:Date.now()}; return true;
+  }catch(e){return false}
+}
+/* --- shared: comu-shared/myinfo.js --- */
+/* ---------- Shared My Info: one profile for ICS 214, ICS 309 and T-Card on this device ----------
+   Every save also goes to comu.myinfo.v1 with the app that wrote it. On load, an app uses that shared copy
+   when another app saved last; when it saved last itself, its own key is current. */
+var MYINFO_SHARED_KEY='comu.myinfo.v1', MYINFO_ALL=['name','callsign','position','agency'];
+function myinfoShared(){try{var o=JSON.parse(localStorage.getItem(MYINFO_SHARED_KEY)||'null');return o&&typeof o==='object'?o:null}catch(e){return null}}
+function myinfoMerge(p,app){var s=myinfoShared(); if(!s||s.by===app) return p; MYINFO_ALL.forEach(function(k){if(typeof s[k]==='string') p[k]=s[k]}); return p}
+function myinfoPublish(p,app){try{var o=myinfoShared()||{}; MYINFO_ALL.forEach(function(k){if(typeof p[k]==='string') o[k]=p[k]}); o.by=app; o.updated=Date.now(); localStorage.setItem(MYINFO_SHARED_KEY,JSON.stringify(o))}catch(e){}}
+/* ---------- dialogs ---------- */
+function dialog(html,buttons){
+  return new Promise(function(res){
+    var d=$('dlg'); $('dlgBody').innerHTML=html; var b=$('dlgBtns'); b.innerHTML='';
+    buttons.forEach(function(x){var e=document.createElement('button');e.type='submit';e.value=x.v;e.textContent=x.t;if(x.cls)e.className=x.cls;b.appendChild(e)});
+    d.returnValue='';
+    var done=function(){d.removeEventListener('close',done);res(d.returnValue||'cancel')};
+    d.addEventListener('close',done);
+    if(d.showModal) d.showModal(); else {res(window.confirm($('dlgBody').textContent)?buttons[buttons.length-1].v:'cancel')}
+  });
+}
+function confirmBox(msg,okText){return dialog('<p>'+esc(msg)+'</p>',[{t:'Cancel',v:'cancel'},{t:okText||'Delete',v:'ok',cls:'danger'}]).then(function(v){return v==='ok'})}
+
+/* ---------- storage ---------- */
+function blank(){return {version:1,logs:[],nets:[],currentId:null,settings:{theme:null,newest:true}}}
+function load(){
+  try{ var raw=localStorage.getItem(KEY); state=raw?JSON.parse(raw):blank(); }catch(e){ storageOK=false; state=blank(); }
+  if(!state.settings) state.settings={newest:true};
+  if(!Array.isArray(state.nets)) state.nets=[];
+  if(!Array.isArray(state.logs)) state.logs=[];
+  state.nets=state.nets.map(fixNet);
+  state.logs.forEach(fixLog);
+  if(state.settings.egg&&!EGGS[state.settings.egg]) state.settings.egg='';
+}
+var LOG_FIELDS=['incidentName','opFromDate','opFromTime','opToDate','opToTime','netId','netName','netFreq','ncs','role','opName','opCall','prepName','prepPosition','prepSignature','prepDate','prepTime'];
+function fixLog(l){
+  LOG_FIELDS.forEach(function(k){if(l[k]==null)l[k]=''});
+  if(l.timeBasis!=='UTC') l.timeBasis='local';
+  if(!l.entries) l.entries=[];
+  l.entries.forEach(function(e){
+    ['date','time','from','fromMsg','to','toMsg','text'].forEach(function(k){if(e[k]==null)e[k]=''});
+    if(e.pri!=null){var pn=+e.pri; if(pn>=1&&pn<=3) e.pri=Math.round(pn); else delete e.pri}
+    if(e.internal!=null){if(e.internal===true||e.internal==='Y'||e.internal===1) e.internal=true; else delete e.internal}
+    if(e.gps&&!(isFinite(e.gps.lat)&&isFinite(e.gps.lon))) delete e.gps; else if(e.gps){e.gps={lat:+(+e.gps.lat).toFixed(5),lon:+(+e.gps.lon).toFixed(5),acc:Math.round(+e.gps.acc||0)}}
+    if(e.rc&&typeof e.rc.k==='string'&&e.rc.k.indexOf('|')>0){var bar=e.rc.k.indexOf('|'); e.rc.k=tplMigrateName(e.rc.k.slice(0,bar))+e.rc.k.slice(bar)}
+    if(!e.id) e.id=uid();
+  });
+  if(l.rc&&typeof l.rc==='object'){l.rc.order=fixOrder(l.rc.order); if(!l.rc.order.length) delete l.rc; else {l.rc.idx=Math.max(0,Math.min(orderCount(l.rc.order)-1,+l.rc.idx||0)); if(['roll','traffic','summary','closed'].indexOf(l.rc.phase)<0) l.rc.phase='roll'; l.rc.on=!!l.rc.on}} else delete l.rc;
+  if(!l.id) l.id=uid(); if(!l.created) l.created=Date.now();
+  return l;
+}
+var NET_FIELDS=['name','channel','ncs','role','schedule','notes'];
+function fixNet(n){n=n&&typeof n==='object'?n:{}; var o={id:n.id||uid()}; NET_FIELDS.forEach(function(k){o[k]=typeof n[k]==='string'?n[k]:''}); o.order=fixOrder(n.order); return o}
+var saveTimer;
+function save(now){
+  clearTimeout(saveTimer);
+  var go=function(){
+    try{ localStorage.setItem(KEY,JSON.stringify(state)); }
+    catch(e){ storageOK=false; showStorageWarn('Could not save to this browser’s storage ('+e.name+'). Export a JSON backup now.'); }
+  };
+  if(now) go(); else saveTimer=setTimeout(go,250);
+}
+window.addEventListener('pagehide',function(){save(true)});
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')save(true)});
+function showStorageWarn(msg){var w=$('storageWarn');w.textContent=msg;w.classList.remove('hidden')}
+function cur(){return state.logs.find(function(l){return l.id===state.currentId})}
+function touch(l){l.updated=Date.now();save()}
+
+/* ---------- theme ---------- */
+var THEMES=['light','dark','night'];
+var THEME_INFO={light:{meta:'#ffffff'},dark:{meta:'#0d0f12'},night:{meta:'#000000'}};
+var THEME_NAME={light:'bright mode',dark:'dark mode',night:'night-vision mode'};
+var EGGS={crt:{name:'Amber CRT terminal',meta:'#120c01'}};
+function eggOn(){var e=state.settings.egg; return EGGS[e]?e:''}
+function applyTheme(){
+  var egg=eggOn(), de=document.documentElement;
+  de.setAttribute('data-night',state.settings.nightColor==='green'?'green':'red');
+  if(egg){
+    de.setAttribute('data-theme','light'); de.setAttribute('data-egg',egg);
+    var bb=$('btnTheme'); bb.innerHTML='&#10022;'; bb.title='Turn off '+EGGS[egg].name+' and return to the normal theme'; bb.setAttribute('aria-label','Theme: '+EGGS[egg].name+'. Turn off');
+    var mm=$('metaTheme'); if(mm) mm.setAttribute('content',EGGS[egg].meta);
+    return;
+  }
+  de.removeAttribute('data-egg');
+  var t=state.settings.theme; if(THEMES.indexOf(t)<0) t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';
+  de.setAttribute('data-theme',t);
+  var nx=nextTheme(t,state.settings.themeDir).t, b=$('btnTheme'); b.innerHTML=nx==='night'?'&#9673;':nx==='dark'?'&#9790;':'&#9728;'; b.title='Switch to '+THEME_NAME[nx]; b.setAttribute('aria-label','Theme: '+THEME_NAME[t]+'. Switch to '+THEME_NAME[nx]);
+  var m=$('metaTheme'); if(m) m.setAttribute('content',THEME_INFO[t].meta);
+}
+function nextTheme(c,dir){ /* bright -> dark -> night -> dark -> bright ... */
+  var i=THEMES.indexOf(c); if(i<0) i=0; dir=dir===-1?-1:1;
+  if(i===0) dir=1; else if(i===THEMES.length-1) dir=-1;
+  return {t:THEMES[i+dir],dir:(i+dir===0)?1:(i+dir===THEMES.length-1)?-1:dir};
+}
+$('btnTheme').onclick=function(){if(eggOn()){var en=EGGS[eggOn()].name;state.settings.egg='';save();applyTheme();syncEggUI();toast(en+' off');return} var n=nextTheme(document.documentElement.getAttribute('data-theme'),state.settings.themeDir);state.settings.theme=n.t;state.settings.themeDir=n.dir;save();applyTheme()};
+
+/* ---------- views ---------- */
+var view='logs';
+function show(v){
+  view=v; ['viewLogs','viewLog','viewNets','viewPace'].forEach(function(id){$(id).classList.toggle('hidden',id!=='view'+v.charAt(0).toUpperCase()+v.slice(1))});
+  if(v==='logs'){ $('title').textContent='ICS 309 Communications Log'; renderList(); }
+  if(v==='log'){ renderLog(); selectTab('tLog'); }
+  if(v==='nets'){ $('title').textContent='Nets'; renderNets(); }
+  if(v==='pace'){ $('title').textContent='My Info'; renderPace(); }
+  renderTicker(); window.scrollTo(0,0); setHdr();
+}
+function setHdr(){document.documentElement.style.setProperty('--hdr',(document.querySelector('header.bar').offsetHeight)+'px')}
+window.addEventListener('resize',setHdr);
+$('btnHome').onclick=function(){show('logs')};
+
+/* ---------- My Info (own key; first run borrows the ICS 214 app's My Info on the same device) ---------- */
+var PACE_KEY='ics309.myinfo.v1', PACE_KEY_214='ics214.pace.v1';
+var PACE_FIELDS=['name','callsign','position','agency'];
+var ICS_POSITIONS=[['COML','Communications Unit Leader'],['COMT','Communications Technician'],['RADO','Radio Operator'],['INCM','Incident Communications Manager'],['INTD','Incident Tactical Dispatcher'],['AUXC','Auxiliary Communications'],['ITSL','IT Service Support Leader'],['THSP','Technical Specialist'],['COMC','Communications Coordinator']];
+function posValue(p){return p[0]+' - '+p[1]}
+var paceEditing=false;
+function paceBlank(){return {name:'',callsign:'',position:'',agency:''}}
+function paceFix(o){var b=paceBlank(); if(!o||typeof o!=='object') return b; PACE_FIELDS.forEach(function(k){b[k]=typeof o[k]==='string'?o[k]:''}); return b}
+function paceLoad(){
+  try{var raw=localStorage.getItem(PACE_KEY); if(raw) return paceFix(JSON.parse(raw));
+    var o=paceFix(JSON.parse(localStorage.getItem(PACE_KEY_214)||'null')); return o;}catch(e){return paceBlank()}}
+var pace=paceFix(myinfoMerge(paceLoad(),'ics309'));
+function paceIsEmpty(o){o=o||pace;return PACE_FIELDS.every(function(k){return !String(o[k]||'').trim()})}
+function paceExport(){var o={};PACE_FIELDS.forEach(function(k){o[k]=pace[k]});return o}
+function paceSave(){try{localStorage.setItem(PACE_KEY,JSON.stringify(pace)); myinfoPublish(pace,'ics309')}catch(e){showStorageWarn('Could not save My Info ('+e.name+').')}}
+function paceFillPosSelect(){var sel=$('pcPosSel'); if(sel.options.length) return;
+  sel.innerHTML='<option value="">Select…</option>'+ICS_POSITIONS.map(function(p){return '<option value="'+esc(posValue(p))+'">'+esc(p[0]+' — '+p[1])+'</option>'}).join('')+'<option value="__other">Other…</option>'}
+function paceSyncPos(){paceFillPosSelect(); var v=$('pcPos').value.trim(), sel=$('pcPosSel');
+  var hit=ICS_POSITIONS.some(function(p){return posValue(p)===v});
+  sel.value=hit?v:(v?'__other':''); $('pcPos').classList.toggle('hidden',sel.value!=='__other')}
+function paceReadHTML(){
+  if(paceIsEmpty()) return '<p class="mi-empty">Empty. Tap Edit.</p>';
+  var F=[['Name','name'],['Call sign','callsign'],['ICS position','position'],['Home Agency and Unit','agency']].filter(function(f){return String(pace[f[1]]||'').trim()});
+  return '<dl class="mi-dl">'+F.map(function(f){return '<dt>'+f[0]+'</dt><dd>'+esc(pace[f[1]])+'</dd>'}).join('')+'</dl>';
+}
+function renderPace(){
+  if(paceIsEmpty()&&!paceEditing) paceEditing=true;
+  $('paceEdit').classList.toggle('hidden',!paceEditing); $('paceRead').classList.toggle('hidden',paceEditing);
+  $('paceToggle').classList.toggle('hidden',paceEditing);
+  if(paceEditing){ document.querySelectorAll('#paceEdit [data-pc]').forEach(function(el){el.value=pace[el.dataset.pc]||''}); paceSyncPos(); }
+  else $('paceRead').innerHTML=paceReadHTML();
+}
+function paceCollect(){document.querySelectorAll('#paceEdit [data-pc]').forEach(function(el){pace[el.dataset.pc]=el.dataset.pc==='callsign'?el.value.toUpperCase():el.value})}
+$('pcPosSel').addEventListener('input',function(){var v=this.value,t=$('pcPos');
+  if(v==='__other'){ if(ICS_POSITIONS.some(function(p){return posValue(p)===t.value})) t.value=''; t.classList.remove('hidden'); setTimeout(function(){t.focus()},0); }
+  else { t.value=v; t.classList.add('hidden'); } });
+$('paceEdit').addEventListener('input',function(){paceCollect();paceSave()});
+$('paceSave').onclick=function(){paceCollect();paceSave();paceEditing=false;renderPace();window.scrollTo(0,0);toast('My Info saved')};
+$('paceToggle').onclick=function(){paceEditing=true;renderPace()};
+$('paceClear').onclick=function(){confirmBox('Clear My Info on this device?','Clear').then(function(ok){if(!ok)return;PACE_FIELDS.forEach(function(k){pace[k]=''});paceSave();paceEditing=true;renderPace()})};
+$('btnPace').onclick=function(){paceEditing=false;show('pace')};
+function posShort(p){var m=String(p||'').match(/^([A-Z]{3,5}) - /);return m?m[1]:String(p||'')}
+/* My Info -> blank 309 boxes: 4. Radio Operator (name, call sign) and 6. Prepared by */
+function paceAutofill(l){
+  var fill=function(k,v){v=(v||'').trim(); if(v&&!String(l[k]||'').trim()) l[k]=v};
+  var call=(pace.callsign||'').trim(), pos=posShort(pace.position);
+  fill('opName',pace.name); fill('opCall',call);
+  fill('prepName',pace.name); fill('prepPosition',[pos,call].filter(Boolean).join(' / '));
+  return l;
+}
+
+/* ---------- Nets (saved presets; none built in) ---------- */
+function netById(id){return state.nets.find(function(n){return n.id===id})}
+function netLine(n){var c=orderCount(n.order);return [n.channel,n.ncs?'NCS '+n.ncs:'',n.role,n.schedule,c?'Roll call: '+c+' count'+(c===1?'y':'ies'):''].filter(Boolean).join(' · ')}
+function renderNets(){
+  var box=$('netList');
+  if(!state.nets.length){box.innerHTML='<div class="card muted">No nets yet. Tap <b>+ Add net</b> to save one you run or check into. Picking it on a new log fills the header.</div>';return}
+  box.innerHTML=state.nets.map(function(n){
+    return '<div class="net" data-id="'+esc(n.id)+'"><div class="info"><div class="t">'+esc(n.name||'(unnamed net)')+'</div><div class="small muted">'+esc(netLine(n)||'—')+'</div>'+(n.notes?'<div class="small notes">'+esc(n.notes)+'</div>':'')+'</div>'+
+      '<button data-nedit="'+esc(n.id)+'">Edit</button><button class="danger" data-ndel="'+esc(n.id)+'" aria-label="Delete net">&#10005;</button></div>';
+  }).join('');
+}
+function netForm(n){
+  return '<h2 style="margin-top:0">'+(n.name?'Edit net':'Add net')+'</h2><div class="grid">'+
+    '<div><label for="nName">Net name</label><input id="nName" value="'+esc(n.name)+'" placeholder="e.g. Weekly county net"></div>'+
+    '<div><label for="nChan">Talkgroup / channel / frequency</label><input id="nChan" value="'+esc(n.channel)+'"></div>'+
+    '<div><label for="nNcs">Net control station</label><input id="nNcs" value="'+esc(n.ncs)+'" autocapitalize="characters" placeholder="Call sign / ID"></div>'+
+    '<div><label for="nRole">My role</label><input id="nRole" value="'+esc(n.role)+'" list="dlRoles2"><datalist id="dlRoles2">'+ROLES.map(function(r){return '<option value="'+esc(r)+'">'}).join('')+'</datalist></div>'+
+    '<div><label for="nSched">Usual day / time</label><input id="nSched" value="'+esc(n.schedule)+'" placeholder="e.g. Tue 19:00"></div></div>'+
+    '<label for="nNotes" style="margin-top:10px">Notes</label><textarea id="nNotes" rows="2">'+esc(n.notes)+'</textarea>'+
+    '<div class="ordhd"><label for="nOrder" style="margin:0">Roll call order <span class="small muted" id="nOrderN">'+esc(orderSummary(n.order))+'</span></label><select id="nTpl" aria-label="Load a template">'+templateOptions()+'</select></div>'+
+    '<textarea id="nOrder" rows="6" spellcheck="false" placeholder="# Region name&#10;County&#10;County: UNIT 1, UNIT 2">'+esc(orderToText(n.order))+'</textarea>'+
+    '<div class="small muted"># starts a region · one county per line · usual units after a colon</div>';
+}
+function editNet(id){
+  var n=id?netById(id):fixNet({}); if(!n) return Promise.resolve(null);
+  var pr=dialog(netForm(n),[{t:'Cancel',v:'cancel'},{t:'Save',v:'save',cls:'primary'}]); wireOrderEditor();
+  return pr.then(function(v){
+    if(v!=='save') return null;
+    var o={name:$('nName').value.trim(),channel:$('nChan').value.trim(),ncs:normCall($('nNcs').value),role:$('nRole').value.trim(),schedule:$('nSched').value.trim(),notes:$('nNotes').value.trim(),order:parseOrder($('nOrder').value)};
+    if(!o.name&&!o.channel){toast('Give the net a name or channel; not saved');return null}
+    Object.assign(n,o); if(!id) state.nets.push(n); save(true); renderNets(); toast(id?'Net updated':'Net saved'); return n.id;
+  });
+}
+$('btnNets').onclick=function(){show('nets')};
+$('btnAddNet').onclick=function(){editNet(null)};
+$('netList').addEventListener('click',function(e){
+  var b=e.target.closest('[data-nedit],[data-ndel]'); if(!b) return;
+  if(b.dataset.nedit) editNet(b.dataset.nedit);
+  else { var n=netById(b.dataset.ndel); confirmBox('Delete the net “'+(n.name||n.channel)+'”? Logs already made keep their header.','Delete net').then(function(ok){if(!ok)return;state.nets=state.nets.filter(function(x){return x.id!==n.id});save(true);renderNets();toast('Net deleted')}) }
+});
+/* picking a net fills the 309 header (box 3, NCS, role; incident name only if blank) */
+function applyNet(l,n){
+  if(!n){l.netId='';return l}
+  l.netId=n.id; l.netName=n.name; l.netFreq=n.channel; l.ncs=n.ncs; l.role=n.role;
+  if(!String(l.incidentName||'').trim()) l.incidentName=n.name;
+  return l;
+}
+function pickNet(){
+  if(!state.nets.length) return Promise.resolve('none');
+  return new Promise(function(res){
+    var html='<h2 style="margin-top:0">Start ICS 309</h2><p class="small muted" style="margin:0">Pick a net to fill the header.</p><div class="netpick">'+
+      state.nets.map(function(n){return '<button type="button" data-pick="'+esc(n.id)+'"><b>'+esc(n.name||n.channel)+'</b><small>'+esc(netLine(n))+'</small></button>'}).join('')+
+      '<button type="button" data-pick="none"><b>No net</b><small>Blank header</small></button></div>';
+    dialog(html,[{t:'Cancel',v:'cancel'}]).then(function(v){res(v)});
+    $('dlgBody').querySelectorAll('[data-pick]').forEach(function(b){b.onclick=function(){var d=$('dlg');d.close(b.dataset.pick)}});
+  });
+}
+
+/* ---------- GPS tagging (device geolocation; no network) ---------- */
+var gpsNoticeShown=false, gpsCache=null;
+function gpsAvailable(){return !!(navigator.geolocation&&navigator.geolocation.getCurrentPosition)&&window.isSecureContext!==false}
+function gpsNotice(msg){if(gpsNoticeShown)return;gpsNoticeShown=true;toast(msg)}
+function gpsTag(pos){var c=pos&&pos.coords; if(!c||!isFinite(c.latitude)||!isFinite(c.longitude)) return null;
+  return {lat:Math.round(c.latitude*1e5)/1e5,lon:Math.round(c.longitude*1e5)/1e5,acc:Math.round(c.accuracy||0),ts:pos.timestamp||Date.now()}}
+function gpsRequest(cb){
+  if(!gpsAvailable()){gpsNotice('GPS not available here; entries save without location');cb(null);return}
+  var done=false, fin=function(v){if(done)return;done=true;cb(v)};
+  try{ navigator.geolocation.getCurrentPosition(function(pos){var t=gpsTag(pos); if(t) gpsCache=t; fin(t)},
+      function(err){gpsNotice(err&&err.code===1?'GPS permission denied; entries save without location':'No GPS fix; entry saved without location');fin(null)},
+      {enableHighAccuracy:true,timeout:8000,maximumAge:30000}); }catch(e){gpsNotice('GPS error; entries save without location');fin(null)}
+  setTimeout(function(){fin(null)},12000);
+}
+function gpsFresh(){return gpsCache&&(Date.now()-gpsCache.ts)<30000?gpsCache:null}
+function gpsAttach(logId,entryId){
+  if(!state.settings.gps) return;
+  var put=function(t){ if(!t) return; var l=state.logs.find(function(x){return x.id===logId}); if(!l) return; var e=l.entries.find(function(x){return x.id===entryId}); if(!e||e.gps) return;
+    e.gps={lat:t.lat,lon:t.lon,acc:t.acc}; touch(l); if(view==='log'&&state.currentId===logId) renderEntries(); };
+  var f=gpsFresh(); if(f){put(f);return} gpsRequest(put);
+}
+function gpsText(g){return g?(g.lat.toFixed(5)+', '+g.lon.toFixed(5)+' ±'+g.acc+'m'):''}
+
+/* ---------- End op period & begin next ---------- */
+function endOpPeriod(){
+  var l=cur(); if(!l) return; var u=isUTC(l), n=nowP(u);
+  var d0=l.opToDate||n.d, t0=l.opToTime||n.t;
+  return dialog('<h2 style="margin-top:0">End op period &amp; begin next</h2><div class="grid"><div><label for="eoDate">End date</label><input type="date" id="eoDate" value="'+esc(d0)+'"></div><div><label for="eoTime">End time (24h)'+(u?'<span class="tzb">UTC</span>':'')+'</label><input id="eoTime" value="'+esc(t0)+'" inputmode="numeric" maxlength="5"></div></div>',
+    [{t:'Cancel',v:'cancel'},{t:'End & begin next',v:'ok',cls:'primary'}]).then(function(v){
+    if(v!=='ok') return null;
+    var ed=$('eoDate').value, et=normTime($('eoTime').value);
+    if(!ed||!et){toast('Enter an end date and 24-hour time');return null}
+    if(l.opFromDate&&(ed+' '+et)<(l.opFromDate+' '+(l.opFromTime||'00:00'))){toast('End is before the period start; nothing changed');return null}
+    l.opToDate=ed; l.opToTime=et; touch(l);
+    var nl=newLog({timeBasis:l.timeBasis,incidentName:l.incidentName,netId:l.netId,netName:l.netName,netFreq:l.netFreq,ncs:l.ncs,role:l.role,opName:l.opName,opCall:l.opCall,
+      prepName:l.prepName,prepPosition:l.prepPosition,prepSignature:'',opFromDate:ed,opFromTime:et,opToDate:'',opToTime:''});
+    if(l.rc&&l.rc.order) {nl.rc={on:false,order:JSON.parse(JSON.stringify(l.rc.order)),idx:0,phase:'roll'}; touch(nl)}
+    $('qDate').value=''; show('log'); selectTab('tLog'); cwPlay('SK');
+    toast('New op period from '+usDate(ed)+' '+zt(nl,et));
+    return nl.id;
+  });
+}
+$('btnEndOp').onclick=function(){endOpPeriod()};
+
+/* ---------- Advanced ---------- */
+var wakeLock=null;
+function wantWake(){return !!state.settings.fieldMode&&document.visibilityState==='visible'}
+function syncWake(){
+  try{
+    if(wantWake()){ if(!wakeLock&&navigator.wakeLock&&navigator.wakeLock.request){ navigator.wakeLock.request('screen').then(function(w){wakeLock=w; w.addEventListener&&w.addEventListener('release',function(){wakeLock=null}); if(!state.settings.fieldMode){w.release().catch(function(){})}}).catch(function(){}); } }
+    else if(wakeLock){ var w=wakeLock; wakeLock=null; w.release().catch(function(){}); }
+  }catch(e){}
+}
+document.addEventListener('visibilitychange',function(){wakeLock=document.visibilityState==='visible'?wakeLock:null;syncWake()});
+function applyAdvanced(){
+  var st=state.settings;
+  document.documentElement.classList.toggle('field',!!st.fieldMode);
+  $('optField').checked=!!st.fieldMode; $('optUTC').checked=!!st.utc; $('optGPS').checked=!!st.gps; $('optMsgNo').checked=!!st.msgNo; $('optCw').checked=!!st.cw; $('optCwVol').value=Math.round(cwVol()*100); $('optCwPitch').value=cwPitch(); $('cwSub').classList.toggle('hidden',!st.cw); $('optCwPitchV').textContent=cwPitch()+' Hz'; syncSmeter(); $('optRcNoResp').checked=!!st.rcNoResp; $('optNightColor').value=st.nightColor==='green'?'green':'red';
+  ['qFromMsg','qToMsg'].forEach(function(id){$(id).classList.toggle('hidden',!st.msgNo)});
+  syncWake(); setHdr();
+}
+$('optField').onchange=function(){state.settings.fieldMode=this.checked;save();applyAdvanced();toast(this.checked?'Field mode on':'Field mode off')};
+$('optUTC').onchange=function(){state.settings.utc=this.checked;save();applyAdvanced();toast(this.checked?'UTC on: new logs use UTC (Z)':'UTC off: new logs use local time')};
+$('optMsgNo').onchange=function(){state.settings.msgNo=this.checked;save();applyAdvanced()};
+$('optCw').onchange=function(){state.settings.cw=this.checked;save();applyAdvanced(); if(this.checked) cwPlay('R')};
+$('optCwVol').onchange=function(){state.settings.cwVol=(+this.value)/100;save();cwPlay('R')};
+$('optCwPitch').oninput=function(){$('optCwPitchV').textContent=this.value+' Hz'};
+$('optCwPitch').onchange=function(){state.settings.cwPitch=+this.value;save();applyAdvanced();cwPlay('R')};
+$('optRcNoResp').onchange=function(){state.settings.rcNoResp=this.checked;save()};
+$('optGPS').onchange=function(){state.settings.gps=this.checked;save();applyAdvanced(); if(this.checked){gpsNoticeShown=false; if(!gpsAvailable()) gpsNotice('GPS not available here; entries save without location');}};
+$('optNightColor').onchange=function(){state.settings.nightColor=this.value==='green'?'green':'red';save();applyTheme()};
+
+/* ---------- About ---------- */
+document.querySelectorAll('.appver').forEach(function(e){e.textContent=APP_VERSION});
+var ABOUT_LINES=[
+ 'Works offline. Data stays on this device.',
+ 'Save nets with a roll call order under Nets.',
+ 'Back up with Export JSON; Import JSON restores.',
+ 'GPS tagging is beta: phones usually block location for a locally opened file.'];
+$('btnAbout').onclick=function(){dialog('<h2 style="margin-top:0">About</h2><p style="margin:0 0 6px"><b>ICS 309 Communications Log</b> by lambdadriver<br><span class="small muted" id="aboutVer" role="button" tabindex="0">Version '+esc(APP_VERSION)+'</span></p><ul id="aboutBody">'+ABOUT_LINES.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul><div id="eggSlot"></div>',[{t:'Close',v:'ok',cls:'primary'}]); eggTaps=0; renderEggMenu();
+  var v=$('aboutVer'); v.onclick=verTap; v.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();verTap()}};};
+
+/* ---------- Easter eggs (About: tap the version 7 times) ---------- */
+/* 1) Amber CRT terminal: screen-only look.  2) S-meter: header signal meter that peaks on each new entry (screen only). */
+var eggTaps=0, eggTapT=0;
+function verTap(){
+  var now=Date.now(); if(now-eggTapT>2500) eggTaps=0; eggTapT=now;
+  if(state.settings.eggUnlocked){toast('Easter eggs are already unlocked');return}
+  eggTaps++;
+  if(eggTaps>=7){eggTaps=0;state.settings.eggUnlocked=true;save();renderEggMenu();toast('\uD83E\uDD5A Easter eggs unlocked!')}
+  else if(eggTaps>=3){var n=7-eggTaps;toast(n+' more tap'+(n===1?'':'s')+' to unlock Easter eggs')}
+}
+function renderEggMenu(){
+  var slot=$('eggSlot'); if(!slot) return;
+  if(!state.settings.eggUnlocked){slot.innerHTML='';return}
+  slot.innerHTML='<div id="eggMenu"><h3>&#129370; Easter eggs</h3><p class="small muted" style="margin:0">The theme button turns a mode off.</p>'+
+    '<label class="toggle"><input type="checkbox" id="egg_crt"'+(eggOn()==='crt'?' checked':'')+'><span>Amber CRT terminal<span class="small">Old-school amber monitor look.</span></span></label>'+
+    '<label class="toggle"><input type="checkbox" id="egg_sm"'+(state.settings.smeter?' checked':'')+'><span>S-meter<span class="small">A signal meter in the top bar that kicks to S9+20 on every log entry.</span></span></label>'+
+    '<div class="eggfoot"><button type="button" id="eggHide">Hide</button></div></div>';
+  $('egg_crt').onchange=function(){state.settings.egg=this.checked?'crt':'';save();applyTheme()};
+  $('egg_sm').onchange=function(){state.settings.smeter=this.checked;save();syncSmeter(); if(this.checked) smKick()};
+  $('eggHide').onclick=function(){state.settings.eggUnlocked=false;save();renderEggMenu();toast('Easter eggs hidden')};
+}
+function syncEggUI(){var c=$('egg_crt'); if(c) c.checked=eggOn()==='crt'}
+/* S-meter egg: screen-only meter in the ticker bar */
+var smT=null;
+function syncSmeter(){var m=$('smeter'); if(!m) return; var on=!!state.settings.smeter; m.classList.toggle('hidden',!on); if(on&&!m.children.length){m.innerHTML=new Array(13).join('<i></i>')+'<span>S1</span>'} smSet(1)}
+function smSet(n){var m=$('smeter'); if(!m||!m.children.length) return; [].forEach.call(m.querySelectorAll('i'),function(x,k){x.className=k<n?(k>=9?'hot':'on'):''}); m.querySelector('span').textContent=n>9?'S9+'+((n-9)*10):'S'+Math.max(1,n); m.dataset.level=n}
+function smKick(){if(!state.settings.smeter) return; clearInterval(smT); var n=12; smSet(n); smT=setInterval(function(){n--; smSet(n); if(n<=1) clearInterval(smT)},90)}
+
+/* ---------- logs list ---------- */
+function logTitle(l){return (l.incidentName||l.netName||'Untitled log')}
+function opText(l){
+  var a=l.opFromDate?usDate(l.opFromDate)+(l.opFromTime?' '+zt(l,l.opFromTime):''):'';
+  var b=l.opToDate||l.opToTime?(usDate(l.opToDate)+(l.opToTime?' '+zt(l,l.opToTime):'')):'';
+  return a||b?(a+' → '+b):'No operational period';
+}
+function renderList(){
+  var box=$('logList'); var logs=state.logs.slice().sort(function(a,b){return (b.opFromDate+b.opFromTime).localeCompare(a.opFromDate+a.opFromTime)||(b.updated||0)-(a.updated||0)});
+  if(!logs.length){box.innerHTML='<div class="card muted">No logs yet. Tap <b>+ New ICS 309</b> to start.</div>';return}
+  box.innerHTML=logs.map(function(l){
+    return '<div class="item" data-id="'+esc(l.id)+'"><div class="info" data-open="'+esc(l.id)+'"><div class="t">'+esc(logTitle(l))+'</div>'+
+      '<div class="small muted">'+esc(opText(l))+(l.netFreq?' · '+esc(l.netFreq):'')+' · '+l.entries.length+' entr'+(l.entries.length===1?'y':'ies')+'</div></div>'+
+      '<button class="danger" data-del="'+esc(l.id)+'" title="Delete log" aria-label="Delete log">&#10005;</button></div>';
+  }).join('');
+}
+$('logList').addEventListener('click',function(e){
+  var t=e.target.closest('[data-open],[data-del]'); if(!t) return;
+  if(t.dataset.open){state.currentId=t.dataset.open;save();show('log')}
+  else if(t.dataset.del){deleteLog(t.dataset.del)}
+});
+function newLog(base){
+  var basis=(base&&base.timeBasis)||(state.settings.utc?'UTC':'local'), n=nowP(basis==='UTC');
+  var l=fixLog({id:uid(),created:Date.now(),updated:Date.now(),timeBasis:basis,opFromDate:n.d,opFromTime:n.t});
+  if(base) Object.assign(l,base);
+  l.timeBasis=basis;
+  l.prepDate=n.d; l.prepTime=n.t; /* 7. Date & Time Prepared = when the log / op period starts; override in Header */
+  paceAutofill(l);
+  state.logs.push(l); state.currentId=l.id; save(true); return l;
+}
+$('btnNew').onclick=function(){pickNet().then(function(v){
+  if(v==='cancel') return;
+  var n=v!=='none'?netById(v):null; var l=newLog(); applyNet(l,n); touch(l); save(true);
+  show('log');
+  if(n){selectTab('tLog'); toast('Header filled from '+(n.name||n.channel))} else {selectTab('tHeader'); setTimeout(function(){$('hIncident').focus()},50)}
+})};
+function deleteLog(id){
+  var l=state.logs.find(function(x){return x.id===id}); if(!l) return;
+  confirmBox('Delete the ICS 309 “'+logTitle(l)+'” ('+opText(l)+', '+l.entries.length+' entries)? This cannot be undone.','Delete log').then(function(ok){
+    if(!ok) return; state.logs=state.logs.filter(function(x){return x.id!==id}); if(state.currentId===id) state.currentId=null; save(true); toast('Log deleted'); show('logs');
+  });
+}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('nav.tabs button').forEach(function(b){b.onclick=function(){selectTab(b.dataset.tab)}});
+function selectTab(id){
+  document.querySelectorAll('nav.tabs button').forEach(function(b){b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false')});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('hidden',t.id!==id)});
+  if(id==='tLog') setTimeout(function(){if(rcOn(cur())){var r=$('rcCall'); if(r&&matchMedia('(pointer:fine)').matches) r.focus({preventScroll:true}); return} var f=$('qFrom'); (f.value?$('qText'):f).focus({preventScroll:true})},30);
+}
+
+/* ---------- log view ---------- */
+function renderLog(){
+  var l=cur(); if(!l){show('logs');return}
+  $('title').textContent=logTitle(l);
+  document.querySelectorAll('[data-f]').forEach(function(inp){inp.value=l[inp.dataset.f]||''});
+  $('optNewest').checked=state.settings.newest!==false;
+  if(!$('qDate').value||$('qDate').dataset.basis!==l.timeBasis){ $('qDate').value=nowP(isUTC(l)).d; $('qDate').dataset.basis=l.timeBasis; }
+  document.querySelectorAll('#viewLog .tzb').forEach(function(b){b.classList.toggle('hidden',!isUTC(l))});
+  $('hNet').innerHTML='<option value="">— None —</option>'+state.nets.map(function(n){return '<option value="'+esc(n.id)+'"'+(l.netId===n.id?' selected':'')+'>'+esc(n.name||n.channel)+'</option>'}).join('')+(l.netId&&!netById(l.netId)?'<option value="'+esc(l.netId)+'" selected>(deleted net)</option>':'');
+  $('dlRoles').innerHTML=ROLES.map(function(r){return '<option value="'+esc(r)+'">'}).join('');
+  updateCallsDatalist(); renderEntries(); syncMode();
+}
+$('hNet').addEventListener('change',function(){var l=cur(); var n=netById(this.value); if(n){applyNet(l,n);toast('Header filled from '+(n.name||n.channel))} else l.netId=''; touch(l); renderLog(); selectTab('tHeader')});
+document.querySelectorAll('[data-f]').forEach(function(inp){
+  var ev=inp.type==='date'?'change':'input';
+  inp.addEventListener(ev,function(){var l=cur();if(!l)return; if(inp.hasAttribute('data-time'))return; l[inp.dataset.f]=inp.value; touch(l); if(inp.dataset.f==='incidentName'||inp.dataset.f==='netName')$('title').textContent=logTitle(l)});
+  if(inp.classList.contains('call')) inp.addEventListener('change',function(){var l=cur(); inp.value=normCall(inp.value); l[inp.dataset.f]=inp.value; touch(l)});
+  if(inp.hasAttribute('data-time')) inp.addEventListener('change',function(){
+    var l=cur(); var v=normTime(inp.value); if(v===null){toast('Use 24-hour time, e.g. 1430 or 14:30');inp.value=l[inp.dataset.f]||'';return}
+    inp.value=v; l[inp.dataset.f]=v; touch(l);
+  });
+  if(inp.dataset.f==='timeBasis') inp.addEventListener('change',function(){renderLog();selectTab('tHeader');toast('Time basis: '+(inp.value==='UTC'?'UTC (Z)':'local')+'. Times already entered were not changed.')});
+});
+document.querySelectorAll('[data-nowfor]').forEach(function(b){b.onclick=function(){
+  var l=cur(); var k=b.dataset.nowfor; var n=nowP(isUTC(l));
+  if(k==='prep'){l.prepDate=n.d;l.prepTime=n.t} else {l[k+'Date']=n.d;l[k+'Time']=n.t}
+  touch(l); renderLog(); selectTab('tHeader');
+}});
+
+/* recent call signs (datalist for From / To) */
+function recentCalls(){
+  var seen={}, out=[], push=function(c,ts){c=String(c||'').trim(); if(!c) return; var k=c.toUpperCase(); if(seen[k]) {if(ts>seen[k].ts) seen[k].ts=ts; return} seen[k]={c:c,ts:ts}; out.push(seen[k])};
+  state.logs.forEach(function(l){l.entries.forEach(function(e){push(e.from,e.ts||0);push(e.to,e.ts||0)}); push(l.ncs,l.updated||0)});
+  state.nets.forEach(function(n){push(n.ncs,0)});
+  return out.sort(function(a,b){return b.ts-a.ts}).slice(0,60).map(function(x){return x.c});
+}
+function updateCallsDatalist(){$('dlCalls').innerHTML=recentCalls().map(function(c){return '<option value="'+esc(c)+'">'}).join('')}
+/* check-in roster: stations heard on this log (lightweight NCS helper; screen + CSV) */
+function roster(l){
+  var me=String(l.opCall||'').toUpperCase(), m={}, order=[];
+  sorted(l,false).forEach(function(e){[e.from].concat(String(e.to||'').split(/\s*,\s*/)).forEach(function(c){c=String(c||'').trim(); if(!c) return; var k=c.toUpperCase(); if(k===me||k==='NCS'||k==='ALL'||k==='NET') return; if(!m[k]){m[k]={call:c,n:0,first:e.time||''};order.push(k)} m[k].n++})});
+  return order.map(function(k){return m[k]});
+}
+
+/* last-message ticker (top of app; screen only) */
+function fromTo(e){return (e.from||'—')+' → '+(e.to||'—')}
+function renderTicker(){
+  var el=$('lastLine'); if(!el) return;
+  var l=cur()||state.logs.slice().sort(function(a,b){return (b.updated||0)-(a.updated||0)})[0];
+  var last=l&&l.entries&&l.entries.length?sorted(l,false).slice(-1)[0]:null;
+  var tag=(l&&view!=='log')?'<b>'+esc(logTitle(l))+'</b> · ':'';
+  el.innerHTML=last?(tag+'Last: <b>'+esc(last.time?zt(l,last.time):'--:--')+'</b> <b>'+esc(fromTo(last))+'</b> '+(last.pri?priHTML(last.pri)+' ':'')+(last.internal?intBadge()+' ':'')+esc(String(last.text).replace(/\s+/g,' '))):'No messages yet';
+  el.title=last?String(last.text):'';
+}
+/* priority & internal entries */
+var PRI_NAME=['None','Low','Medium','High'];
+var LOCK_SVG='<svg class="lock" viewBox="0 0 12 14" width="10" height="12" aria-hidden="true"><path fill="currentColor" d="M3 6V4a3 3 0 0 1 6 0v2h1a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h1zm1.5 0h3V4a1.5 1.5 0 0 0-3 0v2z"/></svg>';
+function priMarks(n){return n>0?new Array(n+1).join('!'):''}
+function priHTML(n){return n>0?'<span class="pmk p'+n+'" aria-label="Priority '+PRI_NAME[n]+'">'+priMarks(n)+'</span>':''}
+function intBadge(){return '<span class="ibadge">'+LOCK_SVG+'Internal</span>'}
+var nextPri=0, priFilter={}, priFilterLog=null;
+function syncPriBtn(){var b=$('btnPri'); b.innerHTML='<span class="pmk p'+nextPri+'">'+(nextPri?priMarks(nextPri):'!')+'</span>'; b.title='Priority for the next entry: '+PRI_NAME[nextPri]+' (tap to cycle)'; b.setAttribute('aria-label','Priority for the next entry: '+PRI_NAME[nextPri]); b.classList.toggle('on',nextPri>0)}
+function passFilter(e){var k=Object.keys(priFilter).filter(function(x){return priFilter[x]}); if(!k.length) return true;
+  return k.some(function(x){return x==='int'?!!e.internal:(e.pri||0)===+x})}
+function sorted(l,newest){
+  var a=l.entries.slice().sort(function(x,y){return ((x.date||'')+(x.time||'')).localeCompare((y.date||'')+(y.time||''))||(x.ts||0)-(y.ts||0)});
+  return newest?a.reverse():a;
+}
+function ftHTML(e){
+  var c=function(cs,mn){return '<span>'+esc(cs||'—')+'</span>'+(mn?'<span class="mn">#'+esc(mn)+'</span>':'')};
+  return '<span class="ft">'+c(e.from,e.fromMsg)+'<span class="arr">→</span>'+c(e.to,e.toMsg)+'</span>';
+}
+function renderEntries(){
+  var l=cur(); var list=sorted(l,state.settings.newest!==false);
+  $('entryCount').textContent=l.entries.length+' entr'+(l.entries.length===1?'y':'ies');
+  renderTicker();
+  if(priFilterLog!==l.id){priFilter={};priFilterLog=l.id}
+  var tagged=l.entries.some(function(e){return e.pri>0||e.internal}), fon=Object.keys(priFilter).some(function(k){return priFilter[k]});
+  var shown=list.filter(passFilter);
+  var chips=(tagged||fon)?'<div class="pf" role="group" aria-label="Filter entries">'+[['all','All'],['3','!!! High'],['2','!! Med'],['1','! Low'],['int','Internal']].map(function(c){var on=c[0]==='all'?!fon:!!priFilter[c[0]];return '<button type="button" data-pf="'+c[0]+'" aria-pressed="'+on+'">'+(c[0]==='int'?LOCK_SVG:'')+c[1]+'</button>'}).join('')+
+    (fon?'<span class="pfcount" aria-live="polite">Filtered: '+shown.length+' of '+list.length+'</span>':'')+'</div>':'';
+  var R=roster(l), open=$('roster')&&$('roster').open;
+  var ros=R.length?'<details class="roster" id="roster"'+(open?' open':'')+'><summary>Stations logged ('+R.length+')</summary><div class="rl">'+R.map(function(r){return '<span class="chip" title="First: '+esc(r.first)+'">'+esc(r.call)+'<b>'+r.n+'</b></span>'}).join('')+'</div></details>':'';
+  $('entries').innerHTML=chips+ros+(shown.length?shown.map(function(e){
+    return '<div class="e'+(e.internal?' internal':'')+'" data-id="'+esc(e.id)+'"><div class="dt">'+esc(e.time?zt(l,e.time):'--:--')+'<small>'+esc(usDate(e.date))+'</small></div><div class="txt"><button type="button" class="prim p'+(e.pri||0)+'" data-pricycle="1" aria-label="Priority: '+PRI_NAME[e.pri||0]+'. Tap to change" title="Priority: '+PRI_NAME[e.pri||0]+' (tap to change)">'+(e.pri?priMarks(e.pri):'!')+'</button>'+(e.internal?intBadge():'')+ftHTML(e)+'<span class="msg">'+esc(e.text)+'</span>'+(e.gps?'<span class="gps" title="GPS tag">&#9673; '+esc(gpsText(e.gps))+'</span>':'')+'</div>'+
+      '<div class="acts"><button data-edit="1" aria-label="Edit entry">Edit</button><button class="danger" data-del="1" aria-label="Delete entry">&#10005;</button></div></div>';
+  }).join(''):(fon?'<p class="muted">No entries match this filter.</p>':'<p class="muted">No messages yet.</p>'));
+}
+$('btnNow').onclick=function(){var n=nowP(isUTC(cur()));$('qDate').value=n.d;$('qTime').value=n.t;$('qText').focus(); if(state.settings.gps&&!gpsFresh()) gpsRequest(function(){});};
+$('qTime').addEventListener('change',function(){var v=normTime(this.value);if(v===null){toast('Use 24-hour time, e.g. 1430');this.value=''}else this.value=v});
+['qFrom','qTo'].forEach(function(id){$(id).addEventListener('change',function(){this.value=normCall(this.value)})});
+$('optNewest').onchange=function(){state.settings.newest=this.checked;save();renderEntries()};
+function addEntry(opt){
+  opt=opt||{}; var l=cur(); var text=$('qText').value.trim(), fr=normCall($('qFrom').value), to=normCall($('qTo').value);
+  if(!text&&!fr&&!to){$('qFrom').focus();return}
+  var t=normTime($('qTime').value), d=$('qDate').value;
+  if(t===null){toast('Use 24-hour time, e.g. 1430');$('qTime').focus();return}
+  if(!t){var n=nowP(isUTC(l));t=n.t;d=n.d}
+  if(!d) d=nowP(isUTC(l)).d;
+  var ne={id:uid(),date:d,time:t,from:fr,fromMsg:state.settings.msgNo?$('qFromMsg').value.trim():'',to:to,toMsg:state.settings.msgNo?$('qToMsg').value.trim():'',text:text,ts:Date.now()};
+  if(nextPri>0) ne.pri=nextPri; if(opt.internal) ne.internal=true; l.entries.push(ne); touch(l);
+  nextPri=0; syncPriBtn();
+  ['qText','qTime','qFrom','qTo','qFromMsg','qToMsg'].forEach(function(id){$(id).value=''}); $('qDate').value=d;
+  updateCallsDatalist(); renderEntries(); $('qFrom').focus(); toast((ne.internal?'Added internal ':'Added ')+zt(l,t)); cwPlay('R'); smKick();
+  if(state.settings.gps) gpsAttach(l.id,ne.id);
+}
+$('btnAdd').onclick=function(){addEntry()};
+$('btnInt').onclick=function(){addEntry({internal:true})};
+$('btnPri').onclick=function(){nextPri=(nextPri+1)%4;syncPriBtn()};
+['btnInt','btnPri','btnAdd'].forEach(function(id){$(id).addEventListener('mousedown',function(e){e.preventDefault()})});
+$('qText').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();addEntry()}});
+['qFrom','qTo','qFromMsg','qToMsg'].forEach(function(id){$(id).addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.isComposing){e.preventDefault(); if(id==='qFrom') $('qTo').focus(); else $('qText').focus()}})});
+$('entries').addEventListener('click',function(e){
+  var b=e.target.closest('button'); if(!b) return; var l=cur();
+  if(b.dataset.pf){var k=b.dataset.pf; if(k==='all') priFilter={}; else priFilter[k]=!priFilter[k]; renderEntries(); var nb=document.querySelector('#entries [data-pf="'+k+'"]'); if(nb) nb.focus(); return}
+  var row=b.closest('.e'); if(!row) return; var id=row.dataset.id; var en=l.entries.find(function(x){return x.id===id}); if(!en) return;
+  if(b.dataset.pricycle){var np=((en.pri||0)+1)%4; if(np) en.pri=np; else delete en.pri; touch(l); renderEntries(); toast('Priority: '+PRI_NAME[np]); return}
+  if(b.dataset.del){confirmBox('Delete this entry? “'+(fromTo(en)+' '+en.text).slice(0,80)+'”','Delete').then(function(ok){if(!ok)return;l.entries=l.entries.filter(function(x){return x.id!==id});touch(l);renderEntries();toast('Entry deleted')})}
+  if(b.dataset.edit){
+    dialog('<h2 style="margin-top:0">Edit entry</h2><div class="grid"><div><label>Date</label><input type="date" id="eDate" value="'+esc(en.date)+'"></div><div><label>Time (24h)</label><input id="eTime" value="'+esc(en.time)+'" inputmode="numeric" maxlength="5"></div></div>'+
+      '<div class="grid" style="margin-top:10px"><div><label>From</label><input id="eFrom" list="dlCalls" value="'+esc(en.from)+'"></div><div><label>From Msg #</label><input id="eFromMsg" value="'+esc(en.fromMsg)+'"></div><div><label>To</label><input id="eTo" list="dlCalls" value="'+esc(en.to)+'"></div><div><label>To Msg #</label><input id="eToMsg" value="'+esc(en.toMsg)+'"></div></div>'+
+      '<label style="margin-top:10px">Message</label><textarea id="eText" rows="4">'+esc(en.text)+'</textarea><div class="grid" style="margin-top:10px;align-items:end"><div><label for="ePri">Priority</label><select id="ePri">'+PRI_NAME.map(function(n,i){return '<option value="'+i+'"'+((en.pri||0)===i?' selected':'')+'>'+(i?priMarks(i)+' ':'')+n+'</option>'}).join('')+'</select></div><label class="toggle" style="margin:0 0 8px"><input type="checkbox" id="eInt"'+(en.internal?' checked':'')+'><span>Internal<span class="small">Kept in exports; left off the printed 309.</span></span></label></div>',
+      [{t:'Cancel',v:'cancel'},{t:'Save',v:'save',cls:'primary'}]).then(function(v){
+      if(v!=='save') return; var t=normTime($('eTime').value); if(t===null){toast('Invalid time — not saved');return}
+      en.date=$('eDate').value; en.time=t; en.from=normCall($('eFrom').value); en.to=normCall($('eTo').value); en.fromMsg=$('eFromMsg').value.trim(); en.toMsg=$('eToMsg').value.trim(); en.text=$('eText').value.trim();
+      var pv=+$('ePri').value; if(pv>0&&pv<4) en.pri=pv; else delete en.pri; if($('eInt').checked) en.internal=true; else delete en.internal; touch(l); updateCallsDatalist(); renderEntries(); toast('Entry updated');
+    });
+  }
+});
+
+/* ---------- out tab / backup ---------- */
+function fileBase(l){return 'ICS309_'+safeName(logTitle(l))+'_'+(l.opFromDate||'')}
+$('btnDelLog').onclick=function(){deleteLog(state.currentId)};
+$('btnCsv').onclick=function(){var l=cur();download(fileBase(l)+'.csv',logCSV(l),'text/csv')};
+$('btnJsonOne').onclick=function(){var l=cur();download(fileBase(l)+'.json',JSON.stringify({app:'ics309-comms-log',version:1,exported:new Date().toISOString(),logs:[l]},null,2),'application/json')};
+$('btnPrint').onclick=function(){printMode='form';buildFormPrint(cur());window.print()};
+function backupJSON(){return JSON.stringify({app:'ics309-comms-log',version:1,exported:new Date().toISOString(),logs:state.logs,nets:state.nets,deviceMyInfo:paceIsEmpty()?undefined:paceExport()},null,2)}
+$('btnExportAll').onclick=function(){download('ICS309_backup_'+todayISO()+'.json',backupJSON(),'application/json');toast('Backup exported ('+state.logs.length+' logs, '+state.nets.length+' nets)')};
+$('btnImport').onclick=function(){$('fileImport').click()};
+$('fileImport').onchange=function(){
+  var f=this.files[0]; if(!f) return; var r=new FileReader();
+  r.onload=function(){ try{ importData(JSON.parse(r.result)); }catch(e){ toast('Import failed: not a valid backup file'); } $('fileImport').value=''; };
+  r.readAsText(f);
+};
+function importData(obj){
+  var logs=Array.isArray(obj)?obj:(obj.logs||(obj.entries?[obj]:[])); if(!Array.isArray(logs)) throw new Error('bad');
+  if(!logs.length&&!(obj&&obj.nets)) throw new Error('bad');
+  var added=0, replaced=0, nn=0;
+  logs.forEach(function(l){
+    l=fixLog(JSON.parse(JSON.stringify(l)));
+    var ex=state.logs.findIndex(function(x){return x.id===l.id});
+    if(ex>=0){ if((state.logs[ex].updated||0)<=(l.updated||0)){state.logs[ex]=l;replaced++} }
+    else {state.logs.push(l);added++}
+  });
+  ((obj&&obj.nets)||[]).forEach(function(n){n=fixNet(n); var ex=state.nets.findIndex(function(x){return x.id===n.id}); if(ex>=0) state.nets[ex]=n; else {state.nets.push(n);nn++}});
+  var mi=!Array.isArray(obj)&&obj.deviceMyInfo, note=''; if(mi){var inP=paceFix(mi); if(paceIsEmpty()&&!paceIsEmpty(inP)){pace=inP;paceSave();note=' + My Info'}}
+  save(true); renderList(); toast('Imported: '+added+' new, '+replaced+' updated, '+nn+' nets'+note);
+}
+function logCSV(l){
+  var rows=[['COMMUNICATIONS LOG (ICS 309)'],
+    ['1. Incident Name',l.incidentName],
+    ['2. Operational Period - Date From',usDate(l.opFromDate),'Time From',l.opFromTime],
+    ['2. Operational Period - Date To',usDate(l.opToDate),'Time To',l.opToTime],
+    ['3. Radio Net Name',l.netName],['Talkgroup / Channel / Frequency',l.netFreq],['Net Control Station',l.ncs],['My Role',l.role],
+    ['4. Radio Operator - Name',l.opName],['Radio Operator - Call Sign',l.opCall]].concat(isUTC(l)?[['Time basis','UTC (Z)']]:[]).concat([
+    [],['5. Communications Log'],['Date','Time','From Call Sign/ID','From Msg #','To Call Sign/ID','To Msg #','Message','Priority','Internal','Lat','Lon','Acc (m)']]);
+  sorted(l,false).forEach(function(e){var g=e.gps; rows.push([usDate(e.date),e.time,e.from,e.fromMsg,e.to,e.toMsg,e.text,e.pri?PRI_NAME[e.pri]:'',e.internal?'Y':'N',g?g.lat.toFixed(5):'',g?g.lon.toFixed(5):'',g?g.acc:''])});
+  rows.push([],['6. Prepared by - Name',l.prepName],['Position / Call Sign',l.prepPosition],['Signature',l.prepSignature],['7. Date/Time Prepared',usDate(l.prepDate)+' '+(l.prepTime||'')]);
+  var R=roster(l); if(R.length){rows.push([],['Stations logged','Entries','First time']); R.forEach(function(r){rows.push([r.call,r.n,r.first])})}
+  return csvRows(rows);
+}
+
+/* ---------- FORM PRINT: FEMA ICS 309 layout, measured pagination ---------- */
+function box3(l){var s=[l.netName,l.netFreq].filter(Boolean).join(' — '); if(l.ncs&&!isNCSRole(l.role)) s+=(s?' · ':'')+'NCS: '+l.ncs; return s}
+function box4(l){return [l.opName,l.opCall].filter(Boolean).join(', ')}
+var B='style="border:none;padding:0"';
+function hdrBlock(l){
+  return '<table><colgroup><col style="width:42%"><col style="width:58%"></colgroup><tr>'+
+    '<td><span class="lbl">1. Incident Name:</span><div class="val">'+esc(l.incidentName)+'</div></td>'+
+    '<td><table style="border:none"><colgroup><col style="width:30%"><col style="width:13%"><col style="width:22%"><col style="width:12%"><col style="width:23%"></colgroup>'+
+    '<tr><td '+B+' class="lbl">2. Operational Period:</td><td '+B+' class="lbl">Date From:</td><td '+B+' class="val">'+esc(usDate(l.opFromDate))+'</td><td '+B+' class="lbl">Date To:</td><td '+B+' class="val">'+esc(usDate(l.opToDate))+'</td></tr>'+
+    '<tr><td '+B+'></td><td '+B+' class="lbl">Time From:</td><td '+B+' class="val">'+esc(zt(l,l.opFromTime))+'</td><td '+B+' class="lbl">Time To:</td><td '+B+' class="val">'+esc(zt(l,l.opToTime))+'</td></tr></table></td></tr>'+
+    '<tr><td style="border-top:none"><span class="lbl">3. Radio Net Name or Position/Tactical Call:</span><div class="val" data-box="3">'+esc(box3(l))+'</div></td>'+
+    '<td style="border-top:none"><span class="lbl">4. Radio Operator (Name, Call Sign):</span><div class="val" data-box="4">'+esc(box4(l))+'</div></td></tr></table>';
+}
+function footBlock(l,p,n){
+  var dt=(usDate(l.prepDate)+' '+(l.prepTime||'')).trim(); if(dt&&isUTC(l)&&l.prepTime) dt+=' UTC';
+  return '<table class="foot" style="border-top:none"><colgroup><col style="width:42%"><col style="width:58%"></colgroup>'+
+    '<tr><td colspan="2" style="border-top:1px solid #000"><span class="lbl">6. Prepared by:</span>&nbsp; <span class="lbl">Name:</span> <span class="uline">'+esc(l.prepName)+'&nbsp;</span> &nbsp;<span class="lbl">Position/Title:</span> <span class="uline">'+esc(l.prepPosition)+'&nbsp;</span> &nbsp;<span class="lbl">Signature:</span> <span class="uline">'+esc(l.prepSignature)+'&nbsp;</span></td></tr>'+
+    '<tr><td><b>ICS 309</b>, Page <b class="pg">'+p+'</b> of <b class="pn">'+n+'</b></td><td><span class="lbl">7. Date &amp; Time Prepared:</span> <span class="uline" style="min-width:2.2in">'+esc(dt)+'&nbsp;</span></td></tr></table>';
+}
+function sheetShell(l,first){
+  var s=document.createElement('div'); s.className='sheet';
+  var th='style="border-top:1px solid #000"';
+  s.innerHTML='<div class="ftitle">COMMUNICATIONS LOG (ICS 309)</div>'+hdrBlock(l)+
+    '<div style="border:1px solid #000;border-top:none;border-bottom:none;padding:2px 4px" class="sec">5. Communications Log'+(first?'':' (continuation)')+':</div>'+
+    '<div class="actwrap"><table><colgroup><col style="width:.62in"><col style="width:1.05in"><col style="width:.5in"><col style="width:1.05in"><col style="width:.5in"><col></colgroup>'+
+    '<tr class="colh"><th rowspan="2" '+th+'>Time'+(isUTC(l)?' (UTC)':'')+'</th><th colspan="2" '+th+'>FROM</th><th colspan="2" '+th+'>TO</th><th rowspan="2" '+th+'>Message</th></tr>'+
+    '<tr class="colh"><th>Call Sign/ID</th><th>Msg #</th><th>Call Sign/ID</th><th>Msg #</th></tr><tbody class="acts"></tbody></table></div>'+footBlock(l,1,1);
+  return s;
+}
+function rowHTML(e,showDate){
+  if(!e) return '<tr class="ruled"><td class="tc"></td><td class="cs"></td><td class="mn"></td><td class="cs"></td><td class="mn"></td><td></td></tr>';
+  var t=(showDate?shortDate(e.date)+' ':'')+(e.time||'');
+  return '<tr class="ruled"><td class="tc">'+esc(t)+'</td><td class="cs">'+esc(e.from)+'</td><td class="mn">'+esc(e.fromMsg)+'</td><td class="cs">'+esc(e.to)+'</td><td class="mn">'+esc(e.toMsg)+'</td><td>'+esc(e.text)+'</td></tr>';
+}
+function fits(sheet){var w=sheet.querySelector('.actwrap');return w.scrollHeight<=w.clientHeight+0.5}
+function buildFormPrint(l){
+  var root=$('printRoot'); root.innerHTML=''; if(!l) return;
+  var list=sorted(l,false).filter(function(e){return !e.internal}); /* internal entries never print; priority never prints */
+  var multiDay=list.some(function(e){return e.date&&e.date!==(l.opFromDate||list[0].date)});
+  var pages=[], i=0, first=true;
+  do{
+    var s=sheetShell(l,first); root.appendChild(s); var tb=s.querySelector('tbody.acts'); var placed=0;
+    while(i<list.length){
+      tb.insertAdjacentHTML('beforeend',rowHTML(list[i],multiDay));
+      if(!fits(s)){ if(placed===0){placed++;i++} else tb.removeChild(tb.lastChild); break; }
+      placed++; i++;
+    }
+    var guard=0; while(guard++<80){tb.insertAdjacentHTML('beforeend',rowHTML(null)); if(!fits(s)){tb.removeChild(tb.lastChild);break}}
+    pages.push(s); first=false;
+  } while(i<list.length && pages.length<500);
+  var n=pages.length; pages.forEach(function(s,k){s.querySelector('.pg').textContent=k+1;s.querySelector('.pn').textContent=n});
+  root.dataset.pages=n;
+}
+var printMode=null;
+window.addEventListener('beforeprint',function(){ if(printMode){printMode=null;return} var l=cur(); if(l) buildFormPrint(l); });
+
+/* ---------- Roll call: check-in order by region / county ---------- */
+/* Optional built-in template: six regions numbered 11-61 (tens digit = region order); counties alphabetical. */
+var REGION_TEMPLATE=[
+ {num:11,area:'Southwest',counties:['Adams','Columbia','Crawford','Dane','Grant','Green','Iowa','Juneau','Lafayette','Richland','Rock','Sauk','Vernon']},
+ {num:21,area:'Southeast',counties:['Jefferson','Kenosha','Milwaukee','Ozaukee','Racine','Walworth','Washington','Waukesha']},
+ {num:31,area:'East Central',counties:['Brown','Calumet','Dodge','Door','Fond du Lac','Green Lake','Kewaunee','Manitowoc','Marquette','Outagamie','Sheboygan','Waupaca','Waushara','Winnebago']},
+ {num:41,area:'Northeast',counties:['Florence','Forest','Langlade','Lincoln','Marathon','Marinette','Menominee','Oconto','Oneida','Portage','Shawano','Vilas','Wood']},
+ {num:51,area:'West Central',counties:['Buffalo','Chippewa','Clark','Dunn','Eau Claire','Jackson','La Crosse','Monroe','Pepin','Pierce','St. Croix','Taylor','Trempealeau']},
+ {num:61,area:'Northwest',counties:['Ashland','Barron','Bayfield','Burnett','Douglas','Iron','Polk','Price','Rusk','Sawyer','Washburn']}];
+var TEMPLATE_PREFIX='Wisconsin Emergency Management Region ';
+var TEMPLATE_ALL='Wisconsin Emergency Management – all 6 regions';
+function tplLabel(r){return TEMPLATE_PREFIX+r.num+' – '+r.area}
+function tplShort(r){return 'Region '+r.num+' – '+r.area}
+function tplByNum(n){return REGION_TEMPLATE.filter(function(r){return r.num===+n})[0]||null}
+function regionShort(n){var m=String(n||'').match(/Region\s+(\d+)\s*[–-]\s*(.+)$/);return m?'Region '+m[1]+' – '+m[2]:String(n||'')}
+/* which: 'all' or a region number (11..61). Always returns fresh copies. */
+function templateOrder(which){var list=which==='all'?REGION_TEMPLATE:[tplByNum(which)].filter(Boolean);
+  return list.map(function(r){return {name:tplLabel(r),counties:r.counties.map(function(c){return {name:c,units:[]}})}})}
+function templateOptions(){return '<option value="">Load template…</option><option value="all">'+esc(TEMPLATE_ALL)+' (72)</option>'+REGION_TEMPLATE.map(function(r){return '<option value="'+r.num+'">'+esc(tplShort(r))+' ('+r.counties.length+')</option>'}).join('')}
+/* names saved by earlier builds (Region 1..6, any order) are mapped to the current label by area */
+function tplMigrateName(n){var m=String(n||'').match(/^Wisconsin Emergency Management Region\s+\d+\s*[–-]\s*(.+)$/); if(!m) return n;
+  var r=REGION_TEMPLATE.filter(function(x){return x.area.toLowerCase()===m[1].trim().toLowerCase()})[0]; return r?tplLabel(r):n}
+function fixOrder(o){if(!Array.isArray(o)) return [];
+  return o.map(function(r){r=r||{};return {name:typeof r.name==='string'?tplMigrateName(r.name.trim()):'',counties:(Array.isArray(r.counties)?r.counties:[]).map(function(c){c=c||{};return {name:String(c.name||'').trim(),units:Array.isArray(c.units)?c.units.map(function(u){return String(u||'').trim()}).filter(Boolean):[]}}).filter(function(c){return c.name})}}).filter(function(r){return r.counties.length})}
+function orderToText(o){return (o||[]).map(function(r){return (r.name?'# '+r.name+'\n':'')+r.counties.map(function(c){return c.name+(c.units.length?': '+c.units.join(', '):'')}).join('\n')}).join('\n')}
+function parseOrder(t){var out=[],r=null;
+  String(t||'').split(/\r?\n/).forEach(function(line){line=line.trim(); if(!line) return;
+    if(line.charAt(0)==='#'){r={name:line.replace(/^#+\s*/,''),counties:[]};out.push(r);return}
+    if(!r){r={name:'',counties:[]};out.push(r)}
+    var i=line.indexOf(':'), name=(i>=0?line.slice(0,i):line).trim(), units=i>=0?line.slice(i+1).split(',').map(function(u){return normCall(u)}).filter(Boolean):[];
+    if(name) r.counties.push({name:name,units:units});
+  });
+  return fixOrder(out);
+}
+function orderCount(o){return (o||[]).reduce(function(a,r){return a+r.counties.length},0)}
+function wireOrderEditor(){var sel=$('nTpl'), ta=$('nOrder'); if(!sel||!ta) return;
+  /* loading a template REPLACES the order (picking a single region gives just that region) */
+  sel.onchange=function(){var v=sel.value; if(v==='') return; var o=templateOrder(v); sel.value=''; if(!o.length) return;
+    ta.value=orderToText(o); $('nOrderN').textContent=orderSummary(o);
+    toast('Loaded '+(v==='all'?'all 6 regions':tplShort(tplByNum(v)))+' · starts at '+o[0].counties[0].name)};
+  ta.addEventListener('input',function(){$('nOrderN').textContent=orderSummary(parseOrder(ta.value))});
+}
+function orderSummary(o){var n=orderCount(o);return n?o.length+' region'+(o.length===1?'':'s')+', '+n+' count'+(n===1?'y':'ies'):'Empty'}
+
+/* state on the log: l.rc={on,order,idx,phase:'roll'|'traffic'|'summary'|'closed'}; entries carry e.rc={k,t,tr,done,calls} */
+function rcFlat(l){var a=[];(l.rc&&l.rc.order||[]).forEach(function(r,ri){r.counties.forEach(function(c){a.push({ri:ri,region:r.name,name:c.name,units:c.units||[],key:r.name+'|'+c.name})})});return a}
+function rcCountyOf(k){var i=String(k||'').indexOf('|');return i>=0?k.slice(i+1):''}
+function ncsId(l){var me=String(l.opCall||'').trim(), n=String(l.ncs||'').trim(); return (isNCSRole(l.role)?(me||n):(n||me))||'NCS'}
+function rcIns(l,k){return l.entries.filter(function(e){return e.rc&&e.rc.t==='in'&&(k==null||e.rc.k===k)}).sort(function(a,b){return (a.ts||0)-(b.ts||0)})}
+function rcAcked(l,k){var m={};l.entries.forEach(function(e){if(e.rc&&e.rc.t==='ack'&&e.rc.k===k)(e.rc.calls||[]).forEach(function(c){m[c.toUpperCase()]=1})});return m}
+function rcQueue(l){return rcIns(l).filter(function(e){return e.rc.tr})}
+function rcPending(l){return rcQueue(l).filter(function(e){return !e.rc.done})}
+function rcText(e){var c=rcCountyOf(e.rc.k);return (e.rc.tr?'Checked in w/ traffic':'Checked in')+(c?' ('+c+')':' (late)')}
+function rcLog(l,from,to,text,meta){var n=nowP(isUTC(l));
+  var ne={id:uid(),date:n.d,time:n.t,from:from,fromMsg:'',to:to,toMsg:'',text:text,ts:Date.now(),rc:meta};
+  l.entries.push(ne); touch(l); smKick(); if(state.settings.gps) gpsAttach(l.id,ne.id); return ne}
+function rcSuggest(l,c){
+  var have={}; rcIns(l,c.key).forEach(function(e){have[String(e.from).toUpperCase()]=1});
+  var out=[], seen={}, push=function(x){x=String(x||'').trim(); var k=x.toUpperCase(); if(!x||seen[k]||have[k]) return; seen[k]=1; out.push(x)};
+  c.units.forEach(push);
+  var hist=[]; state.logs.forEach(function(L){L.entries.forEach(function(e){if(e.rc&&e.rc.t==='in'&&rcCountyOf(e.rc.k)===c.name) hist.push(e)})});
+  hist.sort(function(a,b){return (b.ts||0)-(a.ts||0)}).forEach(function(e){push(e.from)});
+  return out.slice(0,10);
+}
+var rcMode=false;
+function rcOn(l){return !!(l&&l.rc&&l.rc.on)}
+function rcUsed(l){return l.entries.some(function(e){return e.rc&&e.rc.t!=='close'})}
+function sameOrder(a,b){return JSON.stringify(fixOrder(a))===JSON.stringify(fixOrder(b))}
+/* a log keeps its own copy of the order; refresh it from the net while no roll call rows exist yet */
+function rcSyncFromNet(l){var n=netById(l.netId); if(!l.rc||!n||!n.order||!n.order.length||rcUsed(l)||sameOrder(l.rc.order,n.order)) return false;
+  l.rc.order=JSON.parse(JSON.stringify(n.order)); l.rc.idx=0; l.rc.phase='roll'; touch(l); return true}
+function setMode(m){var l=cur(); if(!l) return;
+  if(m==='rc'){ if(l.rc&&rcSyncFromNet(l)) toast('Roll call order updated from the net'); if(!(l.rc&&l.rc.order&&l.rc.order.length)){rcStart(l);return} }
+  if(l.rc) l.rc.on=(m==='rc'); touch(l); syncMode(); if(m!=='rc') selectTab('tLog');
+}
+function syncMode(){var l=cur(), on=rcOn(l);
+  $('quickAdd').classList.toggle('hidden',on); $('rcPanel').classList.toggle('hidden',!on);
+  document.querySelectorAll('#modeSw button').forEach(function(b){b.setAttribute('aria-pressed',String((b.dataset.mode==='rc')===on))});
+  if(on) rcRender();
+}
+function rcStart(l,pick){
+  var n=netById(l.netId), go=function(order){var keep=l.rc&&l.rc.on; l.rc={on:true,order:JSON.parse(JSON.stringify(order)),idx:0,phase:'roll'};touch(l);syncMode();toast('Roll call: '+orderSummary(l.rc.order)+' · starts at '+l.rc.order[0].counties[0].name)};
+  if(!pick&&n&&n.order&&n.order.length){go(n.order);return}
+  var withOrder=state.nets.filter(function(x){return x.order&&x.order.length});
+  var html='<h2 style="margin-top:0">'+(pick?'Change check-in order':'Start roll call')+'</h2><p class="small muted" style="margin:0">'+(n&&!pick?'This net has no check-in order. ':'')+'Pick a check-in order.</p><div class="netpick">'+
+    withOrder.map(function(x){return '<button type="button" data-rco="n:'+esc(x.id)+'"><b>'+esc(x.name||x.channel)+'</b><small>'+esc(orderSummary(x.order)+' · starts at '+x.order[0].counties[0].name)+'</small></button>'}).join('')+
+    '<button type="button" data-rco="t:all"><b>'+esc(TEMPLATE_ALL)+'</b><small>72 counties · starts at '+esc(REGION_TEMPLATE[0].counties[0])+'</small></button>'+
+    REGION_TEMPLATE.map(function(r){return '<button type="button" data-rco="t:'+r.num+'"><b>'+esc(tplShort(r))+'</b><small>'+r.counties.length+' counties · starts at '+esc(r.counties[0])+'</small></button>'}).join('')+'</div>';
+  dialog(html,[{t:'Cancel',v:'cancel'}]).then(function(v){
+    if(!v||v==='cancel'){syncMode();return}
+    if(v.indexOf('n:')===0){var x=netById(v.slice(2)); if(x) go(x.order)} else if(v.indexOf('t:')===0){var o=templateOrder(v.slice(2)); if(o.length) go(o)}
+  });
+  $('dlgBody').querySelectorAll('[data-rco]').forEach(function(b){b.onclick=function(){$('dlg').close(b.dataset.rco)}});
+}
+function rcChip(e){var tr=!!e.rc.tr;
+  return '<span class="rcchip'+(tr?' tr':'')+'"><b>'+esc(e.from)+'</b><button type="button" data-rctr="'+esc(e.id)+'" aria-pressed="'+tr+'" title="Mark traffic">'+(tr?'&#9873; Traffic':'Traffic')+'</button><button type="button" class="x" data-rcx="'+esc(e.id)+'" aria-label="Remove check-in '+esc(e.from)+'">&#10005;</button></span>'}
+function rcJumpSel(l,flat){var rc=l.rc, html='<option value="">Skip to…</option>', last=null;
+  flat.forEach(function(c,i){ if(c.region!==last){ if(last!==null) html+='</optgroup>'; html+='<optgroup label="'+esc(regionShort(c.region)||'Check-ins')+'">'; last=c.region }
+    var n=rcIns(l,c.key).length; html+='<option value="'+i+'">'+(i===rc.idx&&rc.phase==='roll'?'▸ ':'')+esc(c.name)+(n?' ✓'+n:'')+'</option>' });
+  if(last!==null) html+='</optgroup>';
+  return '<select id="rcJump" aria-label="Skip to county">'+html+'<option value="end">Finish roll call ▸</option><option value="order">Change check-in order…</option></select>'}
+function rcStats(l){var flat=rcFlat(l), regs=[], byR={}, late={n:0,t:0,seen:{}};
+  (l.rc.order||[]).forEach(function(r){var o={name:r.name,n:0,t:0,seen:{}};regs.push(o);byR[r.name]=o});
+  rcIns(l).forEach(function(e){var k=e.rc.k, rn=k.slice(0,k.indexOf('|')), o=(k&&byR[rn])||late, c=String(e.from).toUpperCase();
+    if(!o.seen[c]){o.seen[c]=1;o.n++} if(e.rc.tr) o.t++});
+  var tot={n:0,t:0},all={}; regs.concat([late]).forEach(function(o){Object.keys(o.seen).forEach(function(c){all[c]=1});tot.t+=o.t});
+  tot.n=Object.keys(all).length;
+  var missed=flat.map(function(c,i){return {c:c,i:i}}).filter(function(x){return !rcIns(l,x.c.key).length});
+  return {regs:regs,late:late,tot:tot,missed:missed}}
+function rcRender(focus){
+  var l=cur(), p=$('rcPanel'); if(!l||!l.rc){p.innerHTML='';return}
+  var rc=l.rc, flat=rcFlat(l), keep=$('rcCall')?$('rcCall').value:'', keepMsg=$('rcMsg')?$('rcMsg').value:'';
+  if(rc.idx>=flat.length) rc.idx=Math.max(0,flat.length-1);
+  var allIns=rcIns(l), pend=rcPending(l), html='';
+  if(rc.phase==='roll'){
+    var c=flat[rc.idx], ins=rcIns(l,c.key), ack=rcAcked(l,c.key), fresh=ins.filter(function(e){return !ack[String(e.from).toUpperCase()]});
+    var regN=(l.rc.order||[]).length;
+    html='<div class="rcTop"><span class="rcReg">'+esc(c.region||'Roll call')+'</span><span class="rcProg">'+(rc.idx+1)+'/'+flat.length+(regN>1?' · R'+(c.ri+1)+'/'+regN:'')+' · ✓'+allIns.length+(pend.length?' · <span class="rcTq">&#9873;'+pend.length+'</span>':'')+'</span></div>'+
+      '<div class="rcCounty" id="rcCounty">'+esc(c.name)+'</div>'+
+      '<div class="rcIns" id="rcIns">'+(ins.length?ins.map(rcChip).join(''):'<span class="muted small">Listening… no check-ins yet</span>')+'</div>';
+    var sg=rcSuggest(l,c);
+    if(sg.length) html+='<div class="rcSug" aria-label="Tap to check in">'+sg.map(function(s){return '<button type="button" data-rcin="'+esc(s)+'">'+esc(s)+'</button>'}).join('')+'</div>';
+    html+='<div class="rcEntry"><input id="rcCall" class="call" list="dlCalls" placeholder="Call sign / unit" autocomplete="off" autocapitalize="characters" spellcheck="false" enterkeyhint="go"><button type="button" id="rcAdd">Check in</button></div>'+
+      '<div class="rcNav"><button type="button" id="rcBack" aria-label="Back one county">&#9664;</button>'+rcJumpSel(l,flat)+
+      '<button type="button" class="primary rcBig" id="rcNext">'+(fresh.length?'Copy / Next &#9654;':(ins.length?'Next &#9654;':'None · Next &#9654;'))+'</button></div>'+
+      '<div class="small muted rcHint">Enter on an empty box = '+(fresh.length?'Copy / Next':'Next')+'</div>';
+  } else if(rc.phase==='traffic'&&pend.length){
+    var q=rcQueue(l), e=pend[0], qi=q.indexOf(e)+1, sent=l.entries.filter(function(x){return x.rc&&x.rc.t==='tr'&&x.rc.of===e.id}).length;
+    html='<div class="rcTop"><span class="rcReg">Traffic</span><span class="rcProg">'+qi+' of '+q.length+'</span></div>'+
+      '<div class="rcCounty" id="rcCounty">'+esc(e.from)+'</div><div class="small muted" style="text-align:center">'+esc(rcCountyOf(e.rc.k)||'Late check-in')+' · checked in '+esc(zt(l,e.time))+(sent?' · '+sent+' logged':'')+'</div>'+
+      '<div class="rcGo"><button type="button" class="primary" id="rcGa">Go ahead</button></div>'+
+      '<div class="rcMsgRow"><textarea id="rcMsg" rows="3" placeholder="Traffic from '+esc(e.from)+'… (Enter = log)" enterkeyhint="send"></textarea><button type="button" id="rcLogMsg">Log</button></div>'+
+      '<div class="rcNav"><button type="button" id="rcBack" aria-label="Back to roll call">&#9664;</button><button type="button" class="primary rcBig" id="rcDone">Done &#9654;</button></div>'+
+      (pend.length>1?'<div class="small muted rcHint">Up next: '+esc(pend.slice(1,5).map(function(x){return x.from}).join(', '))+(pend.length>5?'…':'')+'</div>':'');
+  } else {
+    if(rc.phase==='traffic') rc.phase='summary';
+    var S=rcStats(l), closed=rc.phase==='closed';
+    var row=function(name,o){return '<tr><td>'+esc(name)+'</td><td class="n">'+o.n+'</td><td class="n">'+(o.t||'')+'</td></tr>'};
+    html='<div class="rcTop"><span class="rcReg">'+(closed?'Net closed'+(rc.closedAt?' '+esc(zt(l,rc.closedAt)):''):'Roll call complete')+'</span><span class="rcProg">✓'+S.tot.n+(S.tot.t?' · &#9873;'+S.tot.t:'')+'</span></div>'+
+      '<div class="rcCounty" id="rcCounty">'+S.tot.n+' check-in'+(S.tot.n===1?'':'s')+'</div>'+
+      '<table class="sum rcSum" id="rcSum"><thead><tr><th>Region</th><th class="n">Check-ins</th><th class="n">Traffic</th></tr></thead><tbody>'+
+      S.regs.map(function(o){return row(regionShort(o.name)||'Check-ins',o)}).join('')+(S.late.n?row('Late',S.late):'')+
+      '</tbody><tfoot><tr><th>Total</th><th class="n">'+S.tot.n+'</th><th class="n">'+(S.tot.t||'')+'</th></tr></tfoot></table>';
+    if(S.missed.length&&!closed) html+='<div class="small rcMissed"><span class="muted">No check-ins ('+S.missed.length+'):</span> '+S.missed.slice(0,40).map(function(x){return '<button type="button" class="lnk" data-rcjump="'+x.i+'">'+esc(x.c.name)+'</button>'}).join(' ')+(S.missed.length>40?' …':'')+'</div>';
+    if(!closed){
+      var lates=rcIns(l,'');
+      html+=(lates.length?'<div class="rcIns">'+lates.map(rcChip).join('')+'</div>':'')+
+        '<div class="rcEntry"><input id="rcCall" class="call" list="dlCalls" placeholder="Late check-in" autocomplete="off" autocapitalize="characters" spellcheck="false" enterkeyhint="go"><button type="button" id="rcAdd">Check in</button></div>'+
+        '<div class="rcNav"><button type="button" id="rcBack" aria-label="Back to roll call">&#9664;</button>'+(pend.length?'<button type="button" id="rcTraffic">Traffic ('+pend.length+') &#9654;</button>':'')+'<button type="button" class="primary rcBig" id="rcClose">Close net</button></div>';
+    } else html+='<div class="rcNav"><button type="button" id="rcBack" aria-label="Back to summary">&#9664;</button><button type="button" id="rcFree">Freeform</button><button type="button" class="primary rcBig" id="rcEndOp">End op period</button></div>';
+  }
+  p.innerHTML=html;
+  if($('rcCall')) $('rcCall').value=keep; if($('rcMsg')) $('rcMsg').value=keepMsg;
+  if(focus&&$(focus)) $(focus).focus({preventScroll:true});
+}
+function rcNow(){var l=cur();return l&&l.rc?l:null}
+function rcCheckIn(call){var l=rcNow(); if(!l) return; call=normCall(call); if(!call) return false;
+  var rc=l.rc, key='';
+  if(rc.phase==='roll'){key=rcFlat(l)[rc.idx].key}
+  if(rcIns(l,key).some(function(e){return String(e.from).toUpperCase()===call.toUpperCase()})){toast(call+' already checked in here');return false}
+  var e=rcLog(l,call,ncsId(l),'',{k:key,t:'in'}); e.text=rcText(e);
+  updateCallsDatalist(); renderEntries(); cwPlay('E'); toast('✓ '+call+' '+zt(l,e.time)); return true}
+function rcFind(l,id){return l.entries.find(function(x){return x.id===id})}
+function rcToggleTr(id){var l=rcNow(), e=l&&rcFind(l,id); if(!e) return; e.rc.tr=!e.rc.tr; if(!e.rc.tr) delete e.rc.done; e.text=rcText(e); touch(l); renderEntries(); rcRender(); toast(e.rc.tr?e.from+' has traffic':'Traffic cleared')}
+function rcRemove(id){var l=rcNow(), e=l&&rcFind(l,id); if(!e) return; l.entries=l.entries.filter(function(x){return x!==e}); touch(l); renderEntries(); rcRender(); toast('Removed '+e.from)}
+function rcFinish(l){l.rc.phase=rcPending(l).length?'traffic':'summary'}
+function rcNext(){var l=rcNow(); if(!l) return; var rc=l.rc, flat=rcFlat(l), c=flat[rc.idx];
+  var ins=rcIns(l,c.key), ack=rcAcked(l,c.key), fresh=ins.filter(function(e){return !ack[String(e.from).toUpperCase()]}).map(function(e){return e.from});
+  var me=ncsId(l);
+  if(fresh.length){rcLog(l,me,fresh.join(', '),'Copied ('+c.name+')',{k:c.key,t:'ack',calls:fresh}); cwPlay('R')}
+  else if(!ins.length&&state.settings.rcNoResp&&!l.entries.some(function(e){return e.rc&&e.rc.t==='nr'&&e.rc.k===c.key})) rcLog(l,me,'','No response ('+c.name+')',{k:c.key,t:'nr'});
+  if(rc.idx<flat.length-1) rc.idx++; else rcFinish(l);
+  touch(l); renderEntries(); rcRender(rc.phase==='traffic'?null:'rcCall');
+}
+function rcBack(){var l=rcNow(); if(!l) return; var rc=l.rc;
+  if(rc.phase==='closed') rc.phase='summary'; else if(rc.phase==='roll') rc.idx=Math.max(0,rc.idx-1); else rc.phase='roll';
+  touch(l); rcRender()}
+function rcJump(v){var l=rcNow(); if(!l||v==='') return; if(v==='order'){rcRender();rcStart(l,true);return} if(v==='end') rcFinish(l); else {l.rc.phase='roll'; l.rc.idx=+v} touch(l); rcRender()}
+function rcLogTraffic(){var l=rcNow(); if(!l) return false; var e=rcPending(l)[0], t=$('rcMsg'), txt=t?t.value.trim():''; if(!e||!txt) return false;
+  rcLog(l,e.from,ncsId(l),txt,{k:e.rc.k,t:'tr',of:e.id}); t.value=''; renderEntries(); cwPlay('R'); return true}
+function rcDone(){var l=rcNow(); if(!l) return; var e=rcPending(l)[0]; rcLogTraffic(); if(e){e.rc.done=true; touch(l)} if(!rcPending(l).length) l.rc.phase='summary'; renderEntries(); rcRender()}
+function rcClose(){var l=rcNow(); if(!l) return; var S=rcStats(l);
+  var e=rcLog(l,ncsId(l),'ALL','Net closed. '+S.tot.n+' check-in'+(S.tot.n===1?'':'s')+(S.tot.t?', '+S.tot.t+' with traffic':'')+'.',{t:'close'});
+  l.rc.phase='closed'; l.rc.closedAt=e.time; touch(l); renderEntries(); rcRender(); cwPlay('SK'); toast('Net closed '+zt(l,e.time))}
+$('modeSw').addEventListener('click',function(e){var b=e.target.closest('[data-mode]'); if(b) setMode(b.dataset.mode)});
+$('rcPanel').addEventListener('mousedown',function(e){if(e.target.closest('button')&&!e.target.closest('#rcGa')) e.preventDefault()});
+$('rcPanel').addEventListener('click',function(e){var b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.rcin!=null){if(rcCheckIn(b.dataset.rcin)) rcRender(); return}
+  if(b.dataset.rctr){rcToggleTr(b.dataset.rctr);return}
+  if(b.dataset.rcx){rcRemove(b.dataset.rcx);return}
+  if(b.dataset.rcjump!=null){rcJump(b.dataset.rcjump);return}
+  switch(b.id){
+    case 'rcAdd': var v=$('rcCall').value; if(!v.trim()){$('rcCall').focus();return} if(rcCheckIn(v)){$('rcCall').value='';rcRender('rcCall')} return;
+    case 'rcNext': rcNext(); return;
+    case 'rcBack': rcBack(); return;
+    case 'rcGa': $('rcMsg').focus(); return;
+    case 'rcLogMsg': if(rcLogTraffic()){rcRender('rcMsg');toast('Traffic logged')} else $('rcMsg').focus(); return;
+    case 'rcDone': rcDone(); return;
+    case 'rcTraffic': var l=rcNow(); l.rc.phase='traffic'; touch(l); rcRender(); return;
+    case 'rcClose': rcClose(); return;
+    case 'rcFree': setMode('free'); return;
+    case 'rcEndOp': endOpPeriod(); return;
+  }
+});
+$('rcPanel').addEventListener('change',function(e){if(e.target.id==='rcJump') rcJump(e.target.value)});
+$('rcPanel').addEventListener('keydown',function(e){
+  if(e.key!=='Enter'||e.isComposing) return;
+  if(e.target.id==='rcCall'){e.preventDefault(); var v=e.target.value; if(v.trim()){if(rcCheckIn(v)){e.target.value='';rcRender('rcCall')}} else if(rcNow()&&rcNow().rc.phase==='roll') rcNext(); return}
+  if(e.target.id==='rcMsg'&&!e.shiftKey){e.preventDefault(); if(rcLogTraffic()){rcRender('rcMsg');toast('Traffic logged')}}
+});
+
+window.ICS309={version:APP_VERSION,importData:importData,endOp:function(){return endOpPeriod()},wake:function(){return !!wakeLock},getPace:function(){return pace},getState:function(){return state},
+  buildFormPrint:function(id){buildFormPrint(state.logs.find(function(l){return l.id===id})||cur())},logCSV:function(id){return logCSV(state.logs.find(function(l){return l.id===id})||cur())},backupJSON:backupJSON,
+  roster:function(){return roster(cur())},rcStats:function(){return rcStats(cur())},templateOrder:templateOrder,parseOrder:parseOrder,recentCalls:recentCalls,cwLast:function(){return cwLast}};
+
+/* ---------- init ---------- */
+load(); applyTheme(); applyAdvanced(); syncPriBtn();
+if(!storageOK) showStorageWarn('This browser is blocking local storage (private mode?). Logs will NOT be kept after closing. Use Export JSON before leaving.');
+if(navigator.storage&&navigator.storage.persist){try{navigator.storage.persist()}catch(e){}}
+if(state.currentId&&cur()) show('log'); else show('logs');
+setHdr();
+})();
+</script>
+<script>
+/* --- shared: comu-shared/shell.js --- */
+/* COMU Field Logs APK shell hooks. Does nothing in a normal browser; only runs inside the Android app (window.ComuAndroid). */
+(function(){
+  var A=window.ComuAndroid; if(!A) return;
+  var de=document.documentElement; de.classList.add('apk');
+  var HOME='../index.html';
+  function goHome(){location.href=HOME}
+  /* Home (launcher) button at the left of the top bar */
+  function addHome(){
+    var bar=document.querySelector('header.bar .wrap'); if(!bar||document.getElementById('btnApkHome')) return;
+    var b=document.createElement('button'); b.id='btnApkHome'; b.type='button'; b.className='ghost noprint';
+    b.title='COMU Field Logs home'; b.setAttribute('aria-label','COMU Field Logs home'); b.innerHTML='&#8962;'; b.onclick=goHome;
+    bar.insertBefore(b,bar.firstChild);
+  }
+  /* Printing goes to the Android print framework (Save as PDF or a printer) */
+  window.print=function(){try{A.print(document.title||'Print')}catch(e){}};
+  /* Exports: blob downloads are handed to Android, which saves them to Downloads */
+  var blobs={}, mk=URL.createObjectURL;
+  URL.createObjectURL=function(o){var u=mk.apply(URL,arguments); if(o instanceof Blob) blobs[u]=o; return u};
+  var click=HTMLAnchorElement.prototype.click;
+  HTMLAnchorElement.prototype.click=function(){
+    var b=this.download&&blobs[this.href];
+    if(!b) return click.apply(this,arguments);
+    var name=this.download, fr=new FileReader();
+    fr.onload=function(){var s=String(fr.result); try{A.saveFile(name,b.type||'application/octet-stream',s.slice(s.indexOf(',')+1))}catch(e){}};
+    fr.readAsDataURL(b); delete blobs[this.href];
+  };
+  /* Field mode keeps the screen on (native flag, in addition to the Wake Lock API) */
+  function syncKeep(){try{A.keepScreenOn(de.classList.contains('field'))}catch(e){}}
+  /* One theme across the home screen and all three apps (bright / dark / night, red or green) */
+  var T=['light','dark','night'];
+  function lastTheme(){try{return JSON.parse(localStorage.getItem('comu.lastTheme')||'null')}catch(e){return null}}
+  function hex(c){var m=String(c).match(/\d+(\.\d+)?/g); if(!m||m.length<3) return ''; return '#'+m.slice(0,3).map(function(x){x=Math.round(+x).toString(16);return x.length<2?'0'+x:x}).join('')}
+  function syncBars(){try{var h=document.querySelector('header.bar'); var c=hex(getComputedStyle(h||document.body).backgroundColor); if(c) A.setBars(c)}catch(e){}}
+  function syncTheme(){
+    syncBars(); if(de.getAttribute('data-egg')) return;
+    try{localStorage.setItem('comu.lastTheme',JSON.stringify({theme:de.getAttribute('data-theme')||'light',night:de.getAttribute('data-night')||'red'}))}catch(e){}}
+  function adoptTheme(){
+    var lt=lastTheme(); if(!lt||de.getAttribute('data-egg')) return;
+    var b=document.getElementById('btnTheme');
+    for(var i=0;b&&T.indexOf(lt.theme)>=0&&de.getAttribute('data-theme')!==lt.theme&&i<4;i++) b.click();
+    var nc=document.getElementById('optNightColor');
+    if(nc&&(lt.night==='red'||lt.night==='green')&&de.getAttribute('data-night')!==lt.night){nc.value=lt.night; nc.dispatchEvent(new Event('change'))}
+  }
+
+  /* Android back: close a dialog, then go to the app's main list/board, then to the home screen */
+  window.comuBack=function(){
+    var d=document.getElementById('dlg'); if(d&&d.open){d.close('cancel');return 'dialog'}
+    var main=document.querySelector('#viewLogs,#viewBoard'), h=document.getElementById('btnHome');
+    if(main&&h&&main.classList.contains('hidden')){h.click();return 'main'}
+    goHome(); return 'home';
+  };
+  function init(){
+    addHome(); adoptTheme(); syncKeep(); syncTheme();
+    new MutationObserver(function(){syncKeep();syncTheme()}).observe(de,{attributes:true,attributeFilter:['class','data-theme','data-night','data-egg']});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+})();
+</script>
+</body>
+</html>
