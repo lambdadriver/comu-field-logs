@@ -1,0 +1,37 @@
+# Signing material. Do not commit keystores, private keys, or certificates.
+*.jks
+*.keystore
+*.bks
+*.pk8
+*.key
+*.p12
+*.pfx
+*.pem
+*.der
+*.idsig
+keystore/
+keystores/
+signing/
+
+# Private working copies and secret files.
+private/
+.env
+.env.*
+*secret*
+*password*
+*credential*
+secrets/
+
+# Incident records and logs saved by the apps. Exports are user data.
+incident-data/
+saved-logs/
+exports/
+backups/
+*.json
+*.csv
+*.log
+
+# OS and editor junk.
+.DS_Store
+Thumbs.db
+*.swp
