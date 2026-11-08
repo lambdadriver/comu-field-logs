@@ -41,6 +41,6 @@ The release tooling used to prepare the branch cannot create a GitHub Release. A
 7. Compare the uploaded APK with SHA-256 `c5f9e88c5f68d9ac250aa2ac23968184ccf5420de1dd5006ede4920a85278234` before you publish.
 8. Publish the Release when you want it visible to everyone who can see the repository. A Release in a private repository stays private.
 
-Before you change the repository from private to public, review `git log` on the initial commit. That commit records a personal email on the author line. This branch does not rewrite history. Replacing that commit requires your explicit approval.
+The published `main` commit uses the GitHub noreply author address. An earlier draft of this file said that commit still showed a personal email. That was true only before the branch tips were rewritten. GitHub can still store the replaced commit where no branch points at it. Do not make this repository public until that cached copy is gone.
 
-After the merge, GitHub’s license badge is taken from `LICENSE` on `main`. Until then the empty initial commit can still show the GPL badge. The applications were never in that commit.
+After the merge, GitHub’s license badge is taken from `LICENSE` on `main`. Until then the initial commit on `main` can still show the GPL badge. The applications were never in that commit.

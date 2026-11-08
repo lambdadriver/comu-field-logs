@@ -121,4 +121,4 @@ Copyright 2026 lambdadriver. Download and use of the apps is permitted. Modifica
 
 - `apps/` holds the three browser tools.
 - `downloads/` holds the Android APK and [downloads/SHA256SUMS.txt](downloads/SHA256SUMS.txt).
-- `docs/` holds the changelog, the validation record, and a maintainer draft for a future GitHub Release.
+- `docs/` holds the changelog, the validation record, a maintainer draft for a future GitHub Release, and `docs/profile-setup.md`. That profile file is text the account owner can paste later. It has not been applied to the GitHub profile.
