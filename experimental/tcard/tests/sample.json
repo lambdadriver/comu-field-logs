@@ -1,0 +1,298 @@
+{
+ "app": "tcard-tracker",
+ "version": 1,
+ "cards": [
+  {
+   "id": "c01",
+   "typeId": "t_port",
+   "ident": "CACHE-A",
+   "qty": "16",
+   "status": "s_as",
+   "location": "Division A",
+   "assignedTo": "Div A Supervisor",
+   "agency": "County EM",
+   "checkIn": "10/31 06:10",
+   "notes": "Ch 1 TAC-1, Ch 2 TAC-2\nBatteries swapped 0900",
+   "history": [
+    {
+     "ts": 1793402970397,
+     "to": "s_av",
+     "ev": "created"
+    },
+    {
+     "ts": 1793410170397,
+     "from": "s_av",
+     "to": "s_as",
+     "loc": "Division A"
+    }
+   ],
+   "created": 1793402970397,
+   "updated": 1793410170397
+  },
+  {
+   "id": "c02",
+   "typeId": "t_port",
+   "ident": "CACHE-B",
+   "qty": "12",
+   "status": "s_av",
+   "location": "Staging",
+   "assignedTo": "",
+   "agency": "County EM",
+   "checkIn": "10/31 06:15",
+   "notes": "Spare cache, 12 + 4 batt",
+   "history": [
+    {
+     "ts": 1793403030397,
+     "to": "s_av",
+     "ev": "created"
+    }
+   ],
+   "created": 1793403030397,
+   "updated": 1793403030397
+  },
+  {
+   "id": "c03",
+   "typeId": "t_mob",
+   "ident": "MOB-07",
+   "qty": "1",
+   "status": "s_as",
+   "location": "Unit 7",
+   "assignedTo": "Unit 7",
+   "agency": "Fire District 3",
+   "checkIn": "10/31 07:00",
+   "notes": "",
+   "history": [
+    {
+     "ts": 1793403090397,
+     "to": "s_av",
+     "ev": "created"
+    },
+    {
+     "ts": 1793413890397,
+     "from": "s_av",
+     "to": "s_as",
+     "loc": "Unit 7"
+    }
+   ],
+   "created": 1793403090397,
+   "updated": 1793413890397
+  },
+  {
+   "id": "c04",
+   "typeId": "t_base",
+   "ident": "BASE-1",
+   "qty": "1",
+   "status": "s_as",
+   "location": "ICP Comms",
+   "assignedTo": "COML",
+   "agency": "County EM",
+   "checkIn": "10/31 05:30",
+   "notes": "Command net + TAC-1",
+   "history": [
+    {
+     "ts": 1793403150397,
+     "to": "s_av",
+     "ev": "created"
+    },
+    {
+     "ts": 1793406750397,
+     "from": "s_av",
+     "to": "s_as",
+     "loc": "ICP Comms"
+    }
+   ],
+   "created": 1793403150397,
+   "updated": 1793406750397
+  },
+  {
+   "id": "c05",
+   "typeId": "t_rptr",
+   "ident": "RPT-2",
+   "qty": "1",
+   "status": "s_oos",
+   "location": "Hilltop site",
+   "assignedTo": "COMT",
+   "agency": "State Cache",
+   "checkIn": "10/31 08:00",
+   "notes": "Low power alarm, waiting on parts",
+   "history": [
+    {
+     "ts": 1793403210397,
+     "to": "s_av",
+     "ev": "created"
+    },
+    {
+     "ts": 1793410410397,
+     "from": "s_av",
+     "to": "s_as",
+     "loc": "Hilltop site"
+    },
+    {
+     "ts": 1793424810397,
+     "from": "s_as",
+     "to": "s_oos",
+     "loc": "Hilltop site"
+    }
+   ],
+   "created": 1793403210397,
+   "updated": 1793424810397
+  },
+  {
+   "id": "c06",
+   "typeId": "t_gw",
+   "ident": "GW-1",
+   "qty": "1",
+   "status": "s_as",
+   "location": "ICP Comms",
+   "assignedTo": "COMT",
+   "agency": "County EM",
+   "checkIn": "10/31 05:45",
+   "notes": "Patch: TAC-1 <> Command",
+   "history": [
+    {
+     "ts": 1793403270397,
+     "to": "s_av",
+     "ev": "created"
+    },
+    {
+     "ts": 1793408670397.0,
+     "from": "s_av",
+     "to": "s_as",
+     "loc": "ICP Comms"
+    }
+   ],
+   "created": 1793403270397,
+   "updated": 1793408670397.0
+  },
+  {
+   "id": "c07",
+   "typeId": "t_sat",
+   "ident": "SAT-1",
+   "qty": "2",
+   "status": "s_av",
+   "location": "Staging",
+   "assignedTo": "",
+   "agency": "State Cache",
+   "checkIn": "10/31 09:10",
+   "notes": "Voice + data terminal",
+   "history": [
+    {
+     "ts": 1793403330397,
+     "to": "s_av",
+     "ev": "created"
+    }
+   ],
+   "created": 1793403330397,
+   "updated": 1793403330397
+  },
+  {
+   "id": "c08",
+   "typeId": "t_comu",
+   "ident": "COMU-1",
+   "qty": "1",
+   "status": "s_as",
+   "location": "ICP",
+   "assignedTo": "COML",
+   "agency": "Regional Team",
+   "checkIn": "10/31 05:00",
+   "notes": "",
+   "history": [
+    {
+     "ts": 1793403390397,
+     "to": "s_av",
+     "ev": "created"
+    },
+    {
+     "ts": 1793405190397.0,
+     "from": "s_av",
+     "to": "s_as",
+     "loc": "ICP"
+    }
+   ],
+   "created": 1793403390397,
+   "updated": 1793405190397.0
+  },
+  {
+   "id": "c09",
+   "typeId": "t_ant",
+   "ident": "MAST-1",
+   "qty": "1",
+   "status": "s_dm",
+   "location": "Returned to cache",
+   "assignedTo": "",
+   "agency": "County EM",
+   "checkIn": "10/31 06:00",
+   "notes": "30 ft mast kit",
+   "history": [
+    {
+     "ts": 1793403450397,
+     "to": "s_av",
+     "ev": "created"
+    },
+    {
+     "ts": 1793407050397,
+     "from": "s_av",
+     "to": "s_as",
+     "loc": "ICP"
+    },
+    {
+     "ts": 1793428650397,
+     "from": "s_as",
+     "to": "s_dm",
+     "loc": "Returned to cache"
+    }
+   ],
+   "created": 1793403450397,
+   "updated": 1793428650397
+  },
+  {
+   "id": "c10",
+   "typeId": "t_gen",
+   "ident": "GEN-5K",
+   "qty": "1",
+   "status": "s_as",
+   "location": "Hilltop site",
+   "assignedTo": "COMT",
+   "agency": "Fire District 3",
+   "checkIn": "10/31 07:30",
+   "notes": "5 kW, refuel 1800",
+   "history": [
+    {
+     "ts": 1793403510397,
+     "to": "s_av",
+     "ev": "created"
+    },
+    {
+     "ts": 1793412510397.0,
+     "from": "s_av",
+     "to": "s_as",
+     "loc": "Hilltop site"
+    }
+   ],
+   "created": 1793403510397,
+   "updated": 1793412510397.0
+  },
+  {
+   "id": "c11",
+   "typeId": "t_it",
+   "ident": "NET-KIT-1",
+   "qty": "1",
+   "status": "s_av",
+   "location": "Staging",
+   "assignedTo": "",
+   "agency": "Regional Team",
+   "checkIn": "10/31 09:30",
+   "notes": "Router + 2 APs",
+   "history": [
+    {
+     "ts": 1793403570397,
+     "to": "s_av",
+     "ev": "created"
+    }
+   ],
+   "created": 1793403570397,
+   "updated": 1793403570397
+  }
+ ],
+ "incident": "Riverside Flood Exercise"
+}

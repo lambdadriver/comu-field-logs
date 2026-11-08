@@ -1,0 +1,145 @@
+<body>
+<header class="bar"><div class="ticker noprint" id="lastLine" aria-live="polite">No changes yet</div><div class="wrap">
+  <button class="ghost" id="btnHome" title="Status board" aria-label="Status board">&#9776;</button>
+  <h1 id="title">T-Card Tracker</h1><span class="beta" title="Experimental side branch">v1.2-exp.2</span>
+  <button id="btnTheme" title="Switch theme" aria-label="Switch theme">&#9790;</button>
+</div></header>
+
+<main id="app">
+  <!-- STATUS BOARD -->
+  <section id="viewBoard" class="wrap">
+    <div id="storageWarn" class="warn hidden"></div>
+    <div class="homebar">
+      <button class="primary" id="btnNew">+ New card</button>
+      <button id="btnPrintView">Print</button>
+      <button id="btnSettings">Types</button>
+    </div>
+    <div class="homebar2">
+      <button id="btnPace">My Info</button>
+      <button id="btnAbout" class="ghost">About</button>
+    </div>
+    <div class="seg bvseg" role="group" aria-label="Board view"><button type="button" data-bv="cols">Columns</button><button type="button" data-bv="map">Map</button></div>
+    <div class="fbar" data-fbar="board"></div>
+    <div class="board" id="board"></div>
+    <div id="mapWrap" class="hidden">
+      <div class="row" style="margin-bottom:8px"><button id="btnMapLoad" style="flex:0 0 auto">Load map image</button><button id="btnMapClear" class="ghost" style="flex:0 0 auto">Remove map</button><input type="file" id="fileMap" accept="image/*" class="hidden"></div>
+      <div id="mapArea" class="nomap"><img id="mapImg" alt="" class="hidden"></div>
+      <p class="mapnote">Drag cards onto the map. Drag a marker back to the tray to take it off. Tap a card to change its status.</p>
+      <h3 style="margin:10px 0 0;font-size:15px">Not on the map</h3>
+      <div id="mapTray" class="tray"></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h2>Backup &amp; export <span class="small muted">(all cards + types)</span></h2>
+      <div class="row bkrow">
+        <button id="btnCsvCards">Cards CSV</button>
+        <button id="btnCsvHist">History CSV</button>
+        <button id="btnExportAll">Export JSON</button>
+        <button id="btnImport">Import JSON</button>
+        <input type="file" id="fileImport" accept=".json,application/json" class="hidden">
+      </div>
+    </div>
+    <div class="card noprint" id="advCard">
+      <h2>Advanced</h2>
+      <label class="toggle"><input type="checkbox" id="optField"><span>Big-button field mode<span class="small">Gloves-friendly; keeps the screen on.</span></span></label>
+      <label class="toggle"><input type="checkbox" id="optUTC"><span>UTC time (Z)<span class="small">History and Now use UTC, 24h.</span></span></label>
+      <label class="toggle"><input type="checkbox" id="optCw"><span>CW sounds<span class="small">Morse tones: “R” on a status change, “E” on a new card.</span></span></label>
+      <div id="cwSub" class="cwsub hidden"><label for="optCwVol">Volume</label><input type="range" id="optCwVol" min="5" max="100" step="5"><label for="optCwPitch">Pitch <span class="small muted" id="optCwPitchV"></span></label><input type="range" id="optCwPitch" min="400" max="1000" step="50"></div>
+      <div class="toggle" style="align-items:center"><label for="optNightColor" style="margin:0;font-size:16px;color:var(--text)">Night vision color</label><select id="optNightColor" style="width:auto;min-width:130px"><option value="red">Red</option><option value="green">Green</option></select></div>
+    </div>
+  </section>
+
+  <!-- ONE CARD -->
+  <section id="viewCard" class="wrap hidden">
+    <div class="ehead" id="cHead"></div>
+    <div class="card">
+      <div class="grid">
+        <div><label for="cType">Type</label><select id="cType" data-c="typeId"></select></div>
+        <div><label for="cName">Name</label><input id="cName" data-c="name" autocomplete="off"></div>
+        <div><label for="cSerial">Serial number</label><input id="cSerial" data-c="serial" autocomplete="off"></div>
+        <div><label for="cQty">Qty</label><input id="cQty" data-c="qty" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="cStatus">Status</label><select id="cStatus"></select></div>
+        <div><label for="cLoc">Location / Assignment</label><input id="cLoc" data-c="location" list="dlLoc" autocomplete="off"></div>
+        <div><label for="cTo">Assigned to</label><input id="cTo" data-c="assignedTo" list="dlTo" autocomplete="off" placeholder="Person or position"></div>
+        <div><label for="cAgency">Owner / Home agency</label><input id="cAgency" data-c="agency" list="dlAgency" autocomplete="off"></div>
+        <div><label for="cIn">ETA / Checked in</label><div class="row" style="flex-wrap:nowrap"><input id="cIn" data-c="checkIn" autocomplete="off" style="min-width:0"><button id="cInNow" style="flex:0 0 auto">Now</button></div></div>
+      </div>
+      <label for="cNotes" style="margin-top:10px">Frequencies / talkgroups / notes</label>
+      <textarea id="cNotes" data-c="notes" rows="3"></textarea>
+    </div>
+    <div class="card">
+      <h2>Status history <span class="small muted">(back of card, automatic)</span></h2>
+      <div class="scroll" id="cHist"></div>
+    </div>
+    <div class="row">
+      <button class="primary" id="cDone">Done</button>
+      <button id="cPrint">Print this card</button>
+      <button class="danger" id="cDel">Delete card</button>
+    </div>
+  </section>
+
+  <!-- PRINT -->
+  <section id="viewPrint" class="wrap hidden">
+    <div class="fbar" data-fbar="print"></div>
+    <div class="card">
+      <div class="row" style="align-items:center"><h2 style="margin:0;flex:1 1 auto">Cards</h2>
+        <div class="seg" role="group" aria-label="Print color" style="flex:0 0 auto"><button type="button" data-pc="color">Color</button><button type="button" data-pc="bw">B&amp;W</button></div></div>
+      <div class="seg" role="group" aria-label="Card size" style="margin-top:8px"><button type="button" data-csz="bc">2 × 3.5 in (10/sheet)</button><button type="button" data-csz="sm">1.5 × 2.5 in (18/sheet)</button><button type="button" data-csz="tc">3.5 × 5 T-card</button></div>
+      <p class="small muted" style="margin:6px 0 0" id="pSizeNote"></p>
+      <div class="row small" style="margin-top:8px;align-items:center"><button id="pSelAll" style="flex:0 0 auto;min-height:36px">All</button><button id="pSelNone" style="flex:0 0 auto;min-height:36px">None</button><span class="muted" id="pSelCount" style="flex:1 1 auto"></span></div>
+      <div class="plist" id="pList"></div>
+      <div class="row"><button class="primary" id="pPrintSel">Print selected</button><button id="pPrintAll">Print all shown</button></div>
+    </div>
+    <div class="card">
+      <h2>Status board sheet</h2>
+      <div class="grid">
+        <div><label for="pIncident">Incident / event <span class="small">(optional)</span></label><input id="pIncident" autocomplete="off"></div>
+        <div><label for="pPrepName">Prepared by</label><input id="pPrepName" autocomplete="off"></div>
+        <div><label for="pPrepPos">Position</label><input id="pPrepPos" list="dlPositions" autocomplete="off"></div>
+      </div>
+      <p class="small muted" style="margin:6px 0 0">Date/time is stamped when you print. Uses the filter above. Every printout shows card short IDs (T-001…) so paper cards and sheets match.</p>
+      <label class="toggle"><input type="checkbox" id="pSlotIds"><span>Show current card IDs in board slots<span class="small">Faint ID + name in each slot, so the paper board mirrors the app.</span></span></label>
+      <div class="row" style="margin-top:8px"><button class="primary" id="pPrintSlots">Print physical board</button><button id="pPrintBoard">Print status list</button><button id="pPrintMap">Print map</button></div>
+      <p class="small muted" style="margin:6px 0 0">Physical board: status columns with a rack: each slot shows the top strip (ID + name) of a card of the size picked above, and the bottom card is full height. Stack the cut cards on it, each one covering the card above except its strip.</p>
+    </div>
+  </section>
+
+  <!-- TYPES & STATUSES -->
+  <section id="viewSettings" class="wrap hidden">
+    <div class="card cats">
+      <h2>Categories &amp; types</h2>
+      <div id="catList"></div>
+      <div class="row"><button id="btnAddCat" style="flex:0 0 auto">+ Category</button></div>
+    </div>
+    <div class="card">
+      <h2>Statuses <span class="small muted">(board columns, in order)</span></h2>
+      <div id="statList"></div>
+      <div class="row"><button id="btnAddStat" style="flex:0 0 auto">+ Status</button></div>
+    </div>
+  </section>
+
+  <!-- MY INFO -->
+  <section id="viewPace" class="wrap hidden noprint">
+    <div class="card">
+      <div class="row" style="align-items:center;margin-bottom:8px">
+        <h2 style="margin:0;flex:1 1 auto">My info</h2>
+        <button id="paceToggle" class="primary" style="flex:0 0 auto">Edit</button>
+      </div>
+      <div id="paceRead"></div>
+      <div id="paceEdit" class="hidden">
+        <div class="grid mi-grid">
+          <div><label for="pcName">Name</label><input id="pcName" data-pc="name" autocomplete="off"></div>
+          <div><label for="pcPosSel">ICS position</label><select id="pcPosSel"></select><input id="pcPos" data-pc="position" autocomplete="off" class="hidden" placeholder="Type the position" aria-label="Other ICS position" style="margin-top:6px"></div>
+          <div><label for="pcAgency">Home Agency and Unit</label><input id="pcAgency" data-pc="agency" autocomplete="off"></div>
+        </div>
+        <div class="row" style="margin-top:10px;justify-content:flex-end"><button id="paceClear" class="danger" style="flex:0 0 auto">Clear</button><button id="paceSave" class="primary" style="flex:0 0 auto">Save</button></div>
+      </div>
+    </div>
+  </section>
+
+  <datalist id="dlLoc"></datalist><datalist id="dlTo"></datalist><datalist id="dlAgency"></datalist><datalist id="dlPositions"></datalist>
+  <footer class="by noprint" id="credit">T-Card Printer &amp; Tracker by lambdadriver · v<span class="appver"></span> (experimental branch) · offline, data stays on this device</footer>
+</main>
+
+<dialog id="dlg"><form method="dialog" id="dlgForm"><div id="dlgBody"></div><div class="row" style="margin-top:14px;justify-content:flex-end" id="dlgBtns"></div></form></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="printRoot" aria-hidden="true"></div>
